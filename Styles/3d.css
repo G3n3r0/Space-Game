@@ -1,0 +1,6 @@
+#menu ul li h2 {
+    text-shadow: -0.06em 0 red, 0.06em 0 cyan;
+}
+#menu ul li {
+    box-shadow: -1px 0 0 red, 1px 0 0 cyan;
+}
