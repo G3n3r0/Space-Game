@@ -8,6 +8,10 @@ An odd mixture of many genres
 ###Some Design Elements
 * [Paul M. Watson](http://www.paulmwatson.com)
 
+###Libraries
+* [EaselJS](http://easeljs.com)
+* [speak.js](https://github.com/kripken/speak.js)
+
 ##Changes
 ###January 21st, 2012
 * Started project
@@ -21,3 +25,4 @@ An odd mixture of many genres
 * Began work on actual game part
 * Some CSS fiddling
 * Created desktop-only CSS file
+* Added speak.js

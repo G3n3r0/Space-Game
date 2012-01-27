@@ -15,16 +15,18 @@
         <script src="./Scripts/EaselJS/src/easeljs/ui/Touch.js"></script>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
         <script src="./Scripts/main.js"></script>
+        <script src="./Scripts/speak.js/speakClient.js"></script>
     </head>
     <body>
         <canvas id="c" width="640" height="480"></canvas>
         <div id="menu">
             <ul>
-                <li class="3dBox"><h2 class="3dTxt">Fly To...</h2><img src="Graphics/rocket.svg" /></li>
+                <li id="fly"><h2>Fly To...</h2><img src="Graphics/rocket.svg" /></li>
                 <li><h2>Refuel</h2><img src="Graphics/gas_station.svg" /></li>
                 <li><h2>To Surface</h2><img src="Graphics/down_arrow.svg" /></li>
                 <li><h2>Trade</h2><img src="Graphics/shopping_cart.svg" /></li>
             </ul>
         </div>
+        <div id="audio"></div>
     </body>
 </html>
