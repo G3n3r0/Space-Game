@@ -1,3 +1,17 @@
+@-webkit-keyframes scroll {
+    0%   { background-position: 100%; }
+    50% { background-position: 50%; }
+	100% { background-position: 100%; }
+}
+@-moz-keyframes scroll {
+	0%   { opacity: 0; }
+	100% { opacity: 1; }
+}
+@-ms-keyframes scroll {
+	0%   { opacity: 0; }
+	100% { opacity: 1; }
+}
+
 html, body {
     margin: 0px;
     padding: 0px;
@@ -16,6 +30,11 @@ body {
 }
 canvas {
     border: 1px solid silver;
+}
+canvas.space {
+    background-image: url(http://deadlyredcube.com/journal/starfield.jpg);
+    -webkit-animation: scroll 5s infinite;
+    -webkit-animation-timing-function: linear;
 }
 #menu {
     font-family: SegoeWPRegular, mono;

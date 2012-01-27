@@ -16,10 +16,19 @@ window.onload = function() {
     function menuScreen() {
         canvas.hide();
         menuDiv.show();
+        $("body").addClass("menuUp")
+    }
+    
+    function travelTo(dist) {
+        canvas.show();
+        canvas.attr("class", "space");
+        menuDiv.hide();
+        $("body").removeClass("menuUp");
     }
     
     function init() {
         menuScreen();
+        travelTo(5000);
     }
     init();
 };

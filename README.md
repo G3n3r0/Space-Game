@@ -16,3 +16,8 @@ An odd mixture of many genres
 * Added some icons
 * Set up Apple stuff
 * 3D!!!
+
+###January 26th, 2012
+* Began work on actual game part
+* Some CSS fiddling
+* Created desktop-only CSS file
