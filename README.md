@@ -26,3 +26,9 @@ An odd mixture of many genres
 * Some CSS fiddling
 * Created desktop-only CSS file
 * Added speak.js
+
+###January 30th, 2012
+* Made TTS voice female
+* Added actual movement
+* Started making the menu do stuff
+* Fixed some weird CSS regression

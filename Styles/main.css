@@ -34,7 +34,8 @@ canvas {
 canvas.space {
     /*background-image: url(http://deadlyredcube.com/journal/starfield.jpg);*/
     //background-image: url(http://www.deviantart.com/download/131202690/Space_Backdrop_by_Frostlight.jpg);
-    background: url(http://zho.berka.com/tiles/starsandnebula250f.jpg);
+    //background: url(http://zho.berka.com/tiles/starsandnebula250f.jpg);
+    background-image: url(../Graphics/space.svg);
     /*-webkit-animation: scroll 5s infinite;
     -webkit-animation-timing-function: linear;*/
 }
