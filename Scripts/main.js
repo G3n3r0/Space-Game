@@ -1,4 +1,19 @@
 window.onload = function() {
+    Array.prototype.findIndex = function(val) {
+        for(var i in this) {
+            if(this[i] == val) {
+                return i;
+            }
+        }
+        return false;
+    };
+    Array.prototype.removeIt = function(val) {
+        var s = this.findIndex(val);
+        if(s!==false) {
+            this.splice(s,1);
+        }
+    };
+    
     function E(a, b) {
         return !(
             ((a.y + a.height) < (b.y)) ||
@@ -7,6 +22,29 @@ window.onload = function() {
             (a.x > (b.x + b.width))
         );
     }
+    var playerBullets = [];
+    
+    function Bullet(color,x,y,type) {
+        this.color = color;
+        this.x = x;
+        this.y = y;
+        this.type = type;
+        this.g = new Graphics();
+        this.g.beginFill(color);
+        this.g.drawRoundRect(0,0,8,8,4,4);
+        this.rect = new Shape(this.g);
+        this.rect.x = this.x;
+        this.rect.y = this.y;
+        stage.addChild(this.rect);
+    }
+    Bullet.prototype.update = function() {
+        this.y -= 9;
+        this.rect.y = this.y;
+        if(this.type == "player" && this.y<-8) {
+            //console.log("badoom");
+            playerBullets.removeIt(this);
+        }
+    };
     
     function PlayerShip(imgSrc,x,y,width,height) {
         this.imgSrc = imgSrc;
@@ -34,10 +72,10 @@ window.onload = function() {
     PlayerShip.prototype.update = function(u,d,l,r,f) {
         var vx = 0;
         var vy = 0;
-        if(u) vy = -this.spd;
-        if(d) vy = this.spd;
-        if(l) vx = -this.spd;
-        if(r) vx = this.spd;
+        if(u) vy -= this.spd;
+        if(d) vy += this.spd;
+        if(l) vx -= this.spd;
+        if(r) vx += this.spd;
         this.x += vx;
         if(this.x>canvas.width()-this.width || this.x<0) {
             this.x -= vx;
@@ -48,12 +86,17 @@ window.onload = function() {
         }
         this.bit.x = this.x;
         this.bit.y = this.y;
-        stage.update();
+        
+        if(f) {
+            playerBullets.push(new Bullet("green", this.x+this.width/2-4, this.y-4, "player"));
+        }
+        
+        //stage.update();
     };
     
     var u,d,l,r,f = false;
     document.onkeydown = function(e) {
-        //console.log(e.which);
+        console.log(e.which);
         if(e.which===38 || e.which===87) {
             u = true;
         } else if(e.which===40 || e.which===83) {
@@ -62,9 +105,9 @@ window.onload = function() {
             r = true;
         } else if(e.which===37 || e.which===65) {
             l = true;
-        }/* else if(e.which===16) {
-            window.player.spd = 9;
-        }*/
+        } else if(e.which===32) {
+            f = true;
+        }
     };
     document.onkeyup = function(e) {
         if(e.which===38 || e.which===87) {
@@ -75,13 +118,18 @@ window.onload = function() {
             r = false;
         } else if(e.which===37 || e.which===65) {
             l = false;
-        }/* else if(e.which===16) {
-            window.player.spd = 3;
-        }*/
+        } else if(e.which===32) {
+            f = false;
+        }
     };
     
     window.tick = function() {
         window.playerShip.update(u,d,l,r,f);
+        for(var i=0;i<playerBullets.length;i++) {
+            playerBullets[i].update();
+        }
+        console.log(playerBullets);
+        stage.update();
     };
     
     window.scrollTo(0,1);

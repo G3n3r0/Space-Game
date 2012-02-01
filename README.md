@@ -32,3 +32,6 @@ An odd mixture of many genres
 * Added actual movement
 * Started making the menu do stuff
 * Fixed some weird CSS regression
+
+###January 31st, 2012
+* Added bullets
