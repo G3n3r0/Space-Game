@@ -1,4 +1,5 @@
 window.onload = function() {
+    var shootInt = 0;
     Array.prototype.findIndex = function(val) {
         for(var i in this) {
             if(this[i] == val) {
@@ -87,8 +88,9 @@ window.onload = function() {
         this.bit.x = this.x;
         this.bit.y = this.y;
         
-        if(f) {
+        if(f && shootInt>=500) {
             playerBullets.push(new Bullet("green", this.x+this.width/2-4, this.y-4, "player"));
+            shootInt = 0;
         }
         
         //stage.update();
@@ -130,6 +132,8 @@ window.onload = function() {
         }
         console.log(playerBullets);
         stage.update();
+        shootInt += 1000/Ticker.getFPS();
+        console.log(shootInt);
     };
     
     window.scrollTo(0,1);

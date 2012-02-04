@@ -35,3 +35,6 @@ An odd mixture of many genres
 
 ###January 31st, 2012
 * Added bullets
+
+###February 3rd, 2012
+* Added shooting interval
