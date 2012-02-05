@@ -25,14 +25,17 @@ window.onload = function() {
     }
     var playerBullets = [];
     
-    function Bullet(color,x,y,type) {
-        this.color = color;
+    function Bullet(colors,x,y,type) {
+        this.colors = colors;
         this.x = x;
         this.y = y;
         this.type = type;
         this.g = new Graphics();
-        this.g.beginFill(color);
-        this.g.drawRoundRect(0,0,8,8,4,4);
+        //this.g.beginFill(color);
+        //this.g.drawRoundRect(0,0,8,8,4,4);
+        //this.g.beginLinearGradientFill(["green", "lime", "green"], [0, 0.5, 1], 0, 0, 8, 0);
+        this.g.beginLinearGradientFill(this.colors, [0, 0.5, 1], 0, 0, 8, 0);
+        this.g.drawRect(0,0,8,12);
         this.rect = new Shape(this.g);
         this.rect.x = this.x;
         this.rect.y = this.y;
@@ -55,6 +58,7 @@ window.onload = function() {
         this.width = width;
         this.height = height;
         this.bit = {x:0,y:0};
+        this.bulletInt = 500;
         
         this.img = new Image();
         var t = this;
@@ -88,8 +92,8 @@ window.onload = function() {
         this.bit.x = this.x;
         this.bit.y = this.y;
         
-        if(f && shootInt>=500) {
-            playerBullets.push(new Bullet("green", this.x+this.width/2-4, this.y-4, "player"));
+        if(f && shootInt>=this.bulletInt) {
+            playerBullets.push(new Bullet(["green", "lime", "green"], this.x+this.width/2-4, this.y-4, "player"));
             shootInt = 0;
         }
         
@@ -133,21 +137,30 @@ window.onload = function() {
         console.log(playerBullets);
         stage.update();
         shootInt += 1000/Ticker.getFPS();
-        console.log(shootInt);
+        //console.log(shootInt);
     };
     
     window.scrollTo(0,1);
     //var canvas = document.getElementById("c");
     var menuDiv = $("#menu");
     var canvas = $("#c");
+    var splash = $("#splash");
     var stage = new Stage(canvas[0]);
     
-    function menuScreen() {
+    function hideAll() {
+        menuDiv.hide();
         canvas.hide();
+        splash.hide();
+    }
+    
+    function menuScreen() {
+        //canvas.hide();
         $("#fly").click(function() {
             travelTo(parseInt(prompt("How far away?"), 10));
         });
-        menuDiv.hide();
+        //menuDiv.hide();
+        //splash.hide();
+        hideAll();
         menuDiv.fadeIn(2000, "easeInElastic", function() {
             speak("Please select your action.", {pitch: 150});
             //alert("Boom");
@@ -157,10 +170,12 @@ window.onload = function() {
     }
     
     function travelTo(dist) {
+        hideAll();
         canvas.show();
         canvas.attr("class", "space");
         canvas.css("background-position", "0px 0px");
-        menuDiv.hide();
+        //menuDiv.hide();
+        //splash.hide();
         $("body").removeClass("menuUp");
         setInterval(function() {
             //console.log(canvas[0]);
@@ -176,10 +191,16 @@ window.onload = function() {
         Ticker.setFPS(30);
         Ticker.addListener(window);
     }
+    function splashScreen(callback) {
+        splash.fadeIn(2000, function() {
+            splash.fadeOut(500, callback)
+        });
+    }
     
     function init() {
-        menuScreen();
+        //menuScreen();
         //travelTo(5000);
+        splashScreen(menuScreen);
     }
     init();
 };

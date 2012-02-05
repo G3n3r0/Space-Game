@@ -38,3 +38,8 @@ An odd mixture of many genres
 
 ###February 3rd, 2012
 * Added shooting interval
+
+###February 4th, 2012
+* Added splash screen
+* Made bullets rectangles
+* Made bullets gradients

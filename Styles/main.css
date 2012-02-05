@@ -100,6 +100,22 @@ canvas.space {
     max-height: 50px;
 }
 
+#menu, #c, #splash {
+    display: none;
+}
+
+#splash {
+    color: white;
+    font-family: Ubuntu, sans-serif;
+}
+#splash h1 {
+    font-size: 100px;
+    margin: 0px;
+}
+#splash h1 sub {
+    font-size: 50px;
+}
+
 /*@media only screen and (max-width: 550px) {
   #menu li {
     height: 100%;
