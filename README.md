@@ -43,3 +43,8 @@ An odd mixture of many genres
 * Added splash screen
 * Made bullets rectangles
 * Made bullets gradients
+
+###February 5th, 2012
+* Added Enemy class
+* Made changes to the Bullet class
+* Added enemy bullet array

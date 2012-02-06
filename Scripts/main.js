@@ -24,30 +24,68 @@ window.onload = function() {
         );
     }
     var playerBullets = [];
+    var enemyBullets = [];
     
     function Bullet(colors,x,y,type) {
         this.colors = colors;
         this.x = x;
         this.y = y;
+        this.w = 8;
+        this.h = 12;
         this.type = type;
         this.g = new Graphics();
         //this.g.beginFill(color);
         //this.g.drawRoundRect(0,0,8,8,4,4);
         //this.g.beginLinearGradientFill(["green", "lime", "green"], [0, 0.5, 1], 0, 0, 8, 0);
-        this.g.beginLinearGradientFill(this.colors, [0, 0.5, 1], 0, 0, 8, 0);
-        this.g.drawRect(0,0,8,12);
+        this.g.beginLinearGradientFill(this.colors, [0, 0.5, 1], 0, 0, this.w, 0);
+        this.g.drawRect(0,0,this.w,this.h);
         this.rect = new Shape(this.g);
         this.rect.x = this.x;
         this.rect.y = this.y;
+        if(this.type=="friend") {
+            this.spd = -9;
+        } else if(this.type=="enemy") {
+            this.spd = 9;
+        }
         stage.addChild(this.rect);
     }
     Bullet.prototype.update = function() {
-        this.y -= 9;
+        //this.y -= 9;
+        this.y += this.spd;
         this.rect.y = this.y;
-        if(this.type == "player" && this.y<-8) {
+        if(this.type == "friend" && this.y<-this.h) {
             //console.log("badoom");
             playerBullets.removeIt(this);
+        } else if(this.type=="enemy" && this.y>canvas.height()) {
+            enemyBullets.removeIt(this);
         }
+    };
+    
+    function EnemyShip(imgSrc,x,y,width,height) {
+        this.imgSrc = imgSrc;
+        this.x = x;
+        this.y = y;
+        this.spd = 3;
+        this.width = width;
+        this.height = height;
+        this.bit = {x:0,y:0};
+        this.bulletInt = 500;
+        
+        this.img = new Image();
+        var t = this;
+        this.img.onload = function() {
+            t.bit = new Bitmap(this);
+            t.bit.x = t.x;
+            t.bit.y = t.y;
+            t.bit.scaleX = t.width/this.width;
+            t.bit.scaleY = t.height/this.height;
+            //console.log(t.bit);
+            stage.addChild(t.bit);
+            stage.update();
+        };
+        this.img.src = this.imgSrc;
+    }
+    EnemyShip.prototype.update = function() {
     };
     
     function PlayerShip(imgSrc,x,y,width,height) {
@@ -93,7 +131,7 @@ window.onload = function() {
         this.bit.y = this.y;
         
         if(f && shootInt>=this.bulletInt) {
-            playerBullets.push(new Bullet(["green", "lime", "green"], this.x+this.width/2-4, this.y-4, "player"));
+            playerBullets.push(new Bullet(["green", "lime", "green"], this.x+this.width/2-4, this.y-4, "friend"));
             shootInt = 0;
         }
         
