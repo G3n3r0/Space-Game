@@ -55,6 +55,6 @@ An odd mixture of many genres
 
 ###February 17th, 2012
 * Added enemies
-* Crappyenemy AI, initiate!
+* Crappy enemy AI, initiate!
 * Music
 * SM2
