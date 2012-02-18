@@ -25,6 +25,7 @@ window.onload = function() {
     }
     var playerBullets = [];
     var enemyBullets = [];
+    var enemies = [];
     
     function Bullet(colors,x,y,type) {
         this.colors = colors;
@@ -32,6 +33,9 @@ window.onload = function() {
         this.y = y;
         this.w = 8;
         this.h = 12;
+        this.power = 2;
+        this.width = this.w;
+        this.height = this.h;
         this.type = type;
         this.g = new Graphics();
         //this.g.beginFill(color);
@@ -64,17 +68,23 @@ window.onload = function() {
     function EnemyShip(imgSrc,x,y,width,height) {
         this.imgSrc = imgSrc;
         this.x = x;
-        this.y = y;
-        this.spd = 3;
+        //this.y = y;
+        this.y = 0-height;
+        this.maxY = y;
+        this.spd = 2;
         this.width = width;
         this.height = height;
         this.bit = {x:0,y:0};
         this.bulletInt = 500;
+        this.shootInt = 500;
         
         this.img = new Image();
         var t = this;
         this.img.onload = function() {
             t.bit = new Bitmap(this);
+            //t.bit.regX = this.width/2;
+            //t.bit.regY = this.height/2;
+            //t.bit.rotation = 180;
             t.bit.x = t.x;
             t.bit.y = t.y;
             t.bit.scaleX = t.width/this.width;
@@ -85,7 +95,39 @@ window.onload = function() {
         };
         this.img.src = this.imgSrc;
     }
-    EnemyShip.prototype.update = function() {
+    EnemyShip.prototype.update = function(p) {
+        var vx = 0;
+        //var vy = 0;
+        //if(this.x) vy -= this.spd;
+        //if(d) vy += this.spd;
+        //console.log(p);
+        if(this.x>p.x) vx -= this.spd;
+        if(this.x<p.x) vx += this.spd;
+        if(this.x==p.x) vx = 0;
+        this.x += vx;
+        if(this.y<this.maxY) {
+            this.y += this.spd;
+        }
+        /*if(this.x>canvas.width()-this.width || this.x<0) {
+            this.x -= vx;
+        }
+        this.y += vy;
+        if(this.y>canvas.height()-this.height || this.y<0) {
+            this.y -= vy;
+        }
+        this.bit.x = this.x;
+        this.bit.y = this.y;
+        
+        if(f && shootInt>=this.bulletInt) {
+            playerBullets.push(new Bullet(["green", "lime", "green"], this.x+this.width/2-4, this.y-4, "friend"));
+            shootInt = 0;
+        }*/
+        if(this.shootInt>=this.bulletInt) {
+            enemyBullets.push(new Bullet(["red", "orange", "red"], this.x+this.width/2-4, this.y+this.height, "enemy"));
+            this.shootInt = 0;
+        }
+        this.bit.x = this.x;
+        this.bit.y = this.y;
     };
     
     function PlayerShip(imgSrc,x,y,width,height) {
@@ -97,6 +139,31 @@ window.onload = function() {
         this.height = height;
         this.bit = {x:0,y:0};
         this.bulletInt = 500;
+        this.shootInt = 0;
+        this.health = 100;
+        
+        /*this.g = new Graphics();
+        //this.g.beginFill(color);
+        //this.g.drawRoundRect(0,0,8,8,4,4);
+        //this.g.beginLinearGradientFill(["green", "lime", "green"], [0, 0.5, 1], 0, 0, 8, 0);
+        this.g.beginLinearGradientFill(this.colors, [0, 0.5, 1], 0, 0, this.w, 0);
+        this.g.drawRect(0,0,this.w,this.h);
+        this.rect = new Shape(this.g);
+        this.rect.x = this.x;
+        this.rect.y = this.y;*/
+        
+        this.healthBar = {
+            g: new Graphics()
+        }
+        this.healthBar.g.beginFill("green");
+        this.healthBar.g.drawRect(0,0,this.width,5);
+        this.healthBar.rect = new Shape(this.healthBar.g);
+        this.healthBar.rect.x = this.x;
+        //alert(this.y);
+        //alert(this.h);
+        this.healthBar.rect.y = this.y+this.height;
+        stage.addChild(this.healthBar.rect);
+        console.log(this.healthBar.rect);
         
         this.img = new Image();
         var t = this;
@@ -130,9 +197,9 @@ window.onload = function() {
         this.bit.x = this.x;
         this.bit.y = this.y;
         
-        if(f && shootInt>=this.bulletInt) {
+        if(f && this.shootInt>=this.bulletInt) {
             playerBullets.push(new Bullet(["green", "lime", "green"], this.x+this.width/2-4, this.y-4, "friend"));
-            shootInt = 0;
+            this.shootInt = 0;
         }
         
         //stage.update();
@@ -140,7 +207,7 @@ window.onload = function() {
     
     var u,d,l,r,f = false;
     document.onkeydown = function(e) {
-        console.log(e.which);
+        //console.log(e.which);
         if(e.which===38 || e.which===87) {
             u = true;
         } else if(e.which===40 || e.which===83) {
@@ -172,9 +239,20 @@ window.onload = function() {
         for(var i=0;i<playerBullets.length;i++) {
             playerBullets[i].update();
         }
-        console.log(playerBullets);
+        //console.log(playerBullets);
+        for(var j=0;j<enemies.length;j++) {
+            enemies[j].update(window.playerShip);
+            enemies[j].shootInt += 1000/Ticker.getFPS();
+        }
+        for(var k=0;k<enemyBullets.length;k++) {
+            enemyBullets[k].update();
+            if(E(window.playerShip, enemyBullets[k])) {
+                //console.log("A hit, cap'n!");
+                window.playerShip.health -= enemyBullets[k].power;
+            }
+        }
         stage.update();
-        shootInt += 1000/Ticker.getFPS();
+        window.playerShip.shootInt += 1000/Ticker.getFPS();
         //console.log(shootInt);
     };
     
@@ -207,7 +285,16 @@ window.onload = function() {
         $("body").addClass("menuUp");
     }
     
+    function fight(ships) {
+        soundManager.stopAll();
+        soundManager.play('Battle');
+        
+        enemies = enemies.concat(ships);
+    }
+    
     function travelTo(dist) {
+        soundManager.stopAll();
+        soundManager.play('Travel');
         hideAll();
         canvas.show();
         canvas.attr("class", "space");
@@ -226,6 +313,7 @@ window.onload = function() {
         }, 1000/30);
         //console.log(canvas.width);
         window.playerShip = new PlayerShip("Graphics/starship.svg", canvas.width()/2-32, canvas.height()*0.75, 64, 64);
+        fight(new EnemyShip("Graphics/starshipdark_flipped.svg", canvas.width()/2-32, canvas.height()*0.25-64, 64, 64));
         Ticker.setFPS(30);
         Ticker.addListener(window);
     }
@@ -236,9 +324,29 @@ window.onload = function() {
     }
     
     function init() {
+        soundManager.url="./Scripts/SoundManager2/swf/soundmanager2.swf";
+        soundManager.onready(function() {
+            soundManager.createSound({
+                id: 'Travel',
+                url: './Sound/Music/Road Trip.mp3',
+                onfinish: function() {
+                    console.log(this);
+                }
+            });
+            soundManager.createSound({
+                id: "Battle",
+                url: "./Sound/Music/Rusty Boss-man Tussle.mp3",
+                onfinish: function() {
+                    //console.log(this);
+                    this.play()
+                }
+            });
+            //soundManager.play('Battle');
+            splashScreen(menuScreen);
+        });
         //menuScreen();
         //travelTo(5000);
-        splashScreen(menuScreen);
+        //splashScreen(menuScreen);
     }
     init();
 };

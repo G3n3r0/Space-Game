@@ -5,12 +5,16 @@ An odd mixture of many genres
 ###Images
 * [The Noun Project](http://www.thenounproject.com)
 
+###Music
+* [avgst](http://opengameart.org/users/avgvst)
+
 ###Some Design Elements
 * [Paul M. Watson](http://www.paulmwatson.com)
 
 ###Libraries
 * [EaselJS](http://easeljs.com)
 * [speak.js](https://github.com/kripken/speak.js)
+* [SoundManager 2](http://www.schillmania.com/projects/soundmanager2/)
 
 ##Changes
 ###January 21st, 2012
@@ -48,3 +52,9 @@ An odd mixture of many genres
 * Added Enemy class
 * Made changes to the Bullet class
 * Added enemy bullet array
+
+###February 17th, 2012
+* Added enemies
+* Crappyenemy AI, initiate!
+* Music
+* SM2
