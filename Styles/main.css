@@ -100,7 +100,7 @@ canvas.space {
     max-height: 50px;
 }
 
-#menu, #c, #splash {
+#menu, #c, #splash, #otherMenu {
     display: none;
 }
 
@@ -114,6 +114,30 @@ canvas.space {
 }
 #splash h1 sub {
     font-size: 50px;
+}
+
+/*#otherMenu {
+    background-color: #aff2af;
+    display: inline-block;
+}*/
+/*#otherMenu {
+    padding: 5px;
+}*/
+#otherMenu div:first-child {
+    border-top-right-radius: 6px;
+}
+#otherMenu div:last-child {
+    border-bottom-right-radius: 6px;
+}
+#audioToggle, #pauseToggle {
+    width: 30px;
+    height: 30px;
+    background-color: #aff2af;
+    padding: 5px;
+}
+#audioToggle img, #pauseToggle img {
+    max-width: 100%;
+    max-height: 100%;
 }
 
 /*@media only screen and (max-width: 550px) {

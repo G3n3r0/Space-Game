@@ -8,6 +8,9 @@ An odd mixture of many genres
 ###Music
 * [avgst](http://opengameart.org/users/avgvst)
 
+###Sound Effects
+* [bart](http://opengameart.org/users/bart)
+
 ###Some Design Elements
 * [Paul M. Watson](http://www.paulmwatson.com)
 
@@ -58,3 +61,12 @@ An odd mixture of many genres
 * Crappy enemy AI, initiate!
 * Music
 * SM2
+
+###February 18th, 2012
+* Created an Icons directoryy
+* Shooting SFX
+* Side menu
+* Health bar
+* Changed background scrolling speed(Ship now moves at ~150 MPH)
+* Music fixed
+* Changed enemy firing interval
