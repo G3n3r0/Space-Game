@@ -1,5 +1,13 @@
 window.onload = function() {
-    var shootInt = 0;
+    var imgs = {
+        playerShip: "Graphics/starship.svg",
+        enemyShip: "Graphics/starshipdark_flipped.svg",
+        speaker: "Graphics/Icons/speaker.svg",
+        muted: "Graphics/Icons/speaker_muted.svg",
+        pause: "Graphics/Icons/stop_hand.svg",
+        play: "Graphics/Icons/right_arrow.svg"
+    };
+    //var shootInt = 0;
     Array.prototype.findIndex = function(val) {
         for(var i in this) {
             if(this[i] == val) {
@@ -14,6 +22,11 @@ window.onload = function() {
             this.splice(s,1);
         }
     };
+    function replacementImg(src) {
+        var canvgC = document.createElement("canvas");
+        canvg(canvgC, src);
+        return canvgC.toDataURL("image/png");
+    }
     
     function E(a, b) {
         if(a && b) {
@@ -260,7 +273,9 @@ window.onload = function() {
     var distInc = ratio*bgInc;
     var distTravel = 0;
     window.tick = function() {
-        canvas[0].style.backgroundPositionY = parseInt(canvas[0].style.backgroundPositionY, 10)+bgInc+"px";
+        //canvas[0].style.backgroundPositionY = parseInt(canvas[0].style.backgroundPositionY||0, 10)+bgInc+"px";
+        canvas[0].style.backgroundPosition = "0px "+(parseInt(canvas[0].style.backgroundPosition.split(" ")[1]||0, 10)+bgInc)+"px";
+        console.log("0px "+(parseInt(canvas[0].style.backgroundPosition.split(" ")[1], 10)+20)+"px");
         
         window.playerShip.update(u,d,l,r,f);
         for(var i=0;i<playerBullets.length;i++) {
@@ -342,6 +357,7 @@ window.onload = function() {
         });
         //menuDiv.slideDown(2000);
         $("body").addClass("menuUp");
+        canvg();
     }
     var fighting = false;
     function fight(ships) {
@@ -378,8 +394,9 @@ window.onload = function() {
             //console.log("0px "+parseInt(canvas[0].style.backgroundPositionY, 10)+"px");
         //}, 1000/30);
         //console.log(canvas.width);
-        window.playerShip = new PlayerShip("Graphics/starship.svg", canvas.width()/2-32, canvas.height()*0.75, 64, 64);
-        fight(new EnemyShip("Graphics/starshipdark_flipped.svg", canvas.width()/2-32, canvas.height()*0.25-64, 64, 64));
+        window.playerShip = new PlayerShip(imgs.playerShip, canvas.width()/2-32, canvas.height()*0.75, 64, 64);
+        fight(new EnemyShip(imgs.enemyShip, canvas.width()/2-32, canvas.height()*0.25-64, 64, 64));
+        //window.open(replacementImg("Graphics/starshipdark_flipped.svg"));
         Ticker.setFPS(30);
         Ticker.addListener(window);
     }
@@ -416,19 +433,19 @@ window.onload = function() {
                 //soundManager.toggleMute();
                 if(soundManager.getSoundById("Travel").muted) {
                     soundManager.unmute();
-                    $("#audioToggle img").attr("src", "Graphics/Icons/speaker.svg");
+                    $("#audioToggle img").attr("src", imgs.speaker);
                 } else {
                     soundManager.mute();
-                    $("#audioToggle img").attr("src", "Graphics/Icons/speaker_muted.svg");
+                    $("#audioToggle img").attr("src", imgs.muted);
                 }
             });
             $("#pauseToggle").click(function() {
                 var p = Ticker.getPaused();
                 Ticker.setPaused(!p);
                 if(p) {
-                    $("#pauseToggle img").attr("src", "Graphics/Icons/stop_hand.svg");
+                    $("#pauseToggle img").attr("src", imgs.pause);
                 } else {
-                    $("#pauseToggle img").attr("src", "Graphics/Icons/right_arrow.svg");
+                    $("#pauseToggle img").attr("src", imgs.play);
                 }
             });
             //soundManager.play('Battle');

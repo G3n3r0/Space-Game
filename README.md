@@ -70,3 +70,9 @@ An odd mixture of many genres
 * Changed background scrolling speed(Ship now moves at ~150 MPH)
 * Music fixed
 * Changed enemy firing interval
+
+###February 19th, 2012
+* Moved images to one big resource URL object
+* Added Modernizr
+* Fixed bugs in Firefox
+* Began to add images for SVG-less browsers
