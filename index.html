@@ -5,7 +5,8 @@
         <meta name="viewport" content="user-scalable=no, width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="black" />
-        <link rel="apple-touch-icon-precomposed" href="Graphics/rocket_white.png"/>
+        <link rel="apple-touch-icon" href="Graphics/rocket_white.png"/>
+        <link rel="apple-touch-startup-image" href="Graphics/startup.png" />
         <link rel="shortcut icon" href="Graphics/rocket_white.png" />
     
         <link rel="stylesheet" href="./Fonts/Segoe WP/stylesheet.css" />
@@ -32,6 +33,7 @@
             <div id="pauseToggle"><img src="Graphics/Icons/stop_hand.svg" /></div>
         </div>
         <canvas id="c" width="640" height="480"></canvas><br />
+        <div id="touchControls"><button id="up">&uarr;</button><br /><button id="left">&larr;</button><button id="fire">O</button><button id="right">&rarr;</button><br /><button id="down">&darr;</button></div>
         <div id="menu">
             <ul>
                 <li id="fly"><h2>Fly To...</h2><img src="Graphics/Icons/rocket.svg" /></li>

@@ -1,12 +1,24 @@
 window.onload = function() {
+    var menuDiv = $("#menu");
+    var canvas = $("#c");
+    var splash = $("#splash");
+    var otherMenu = $("#otherMenu");
+    var touchCons = $("#touchControls");
+    var stage = new Stage(canvas[0]);
+    
     var imgs = {
-        playerShip: "Graphics/starship.svg",
-        enemyShip: "Graphics/starshipdark_flipped.svg",
+        playerShip: "Graphics/starship.png",
+        enemyShip: "Graphics/starshipdark_flipped.png",
         speaker: "Graphics/Icons/speaker.svg",
         muted: "Graphics/Icons/speaker_muted.svg",
         pause: "Graphics/Icons/stop_hand.svg",
         play: "Graphics/Icons/right_arrow.svg"
     };
+    //alert(Modernizr.svg);
+    if(!Modernizr.svg) {
+        imgs.playerShip = "Graphics/starship.png";
+        imgs.enemyShip = "Graphics/starshipdark_flipped.png";
+    }
     //var shootInt = 0;
     Array.prototype.findIndex = function(val) {
         for(var i in this) {
@@ -22,11 +34,11 @@ window.onload = function() {
             this.splice(s,1);
         }
     };
-    function replacementImg(src) {
+    /*function replacementImg(src) {
         var canvgC = document.createElement("canvas");
         canvg(canvgC, src);
         return canvgC.toDataURL("image/png");
-    }
+    }*/
     
     function E(a, b) {
         if(a && b) {
@@ -185,11 +197,12 @@ window.onload = function() {
         //alert(this.h);
         this.healthBar.rect.y = this.y+this.height;
         stage.addChild(this.healthBar.rect);
-        console.log(this.healthBar.rect);
+        //console.log(this.healthBar.rect);
         
         this.img = new Image();
         var t = this;
         this.img.onload = function() {
+            t.bit.regX = 0;
             t.bit = new Bitmap(this);
             t.bit.x = t.x;
             t.bit.y = t.y;
@@ -228,7 +241,7 @@ window.onload = function() {
         
         this.healthBar.rect.x = this.x;
         this.healthBar.rect.y = this.y+this.height;
-        console.log(this.healthBar);
+        //console.log(this.healthBar);
         
         if(f && this.shootInt>=this.bulletInt) {
             soundManager.play("Bullet");
@@ -267,15 +280,46 @@ window.onload = function() {
             f = false;
         }
     };
+    /*canvas[0].ontouchstart = function() {
+        f = true;
+    }
+    canvas[0].ontouchend = function () {
+        f = false;
+    };*/
+    $("#up").live("touchstart", function() {
+        u = true;
+    }).live("touchend", function() {
+        u = false;
+    });
+    $("#down").live("touchstart", function() {
+        d = true;
+    }).live("touchend", function() {
+        d = false;
+    });
+    $("#left").live("touchstart", function() {
+        l = true;
+    }).live("touchend", function() {
+        l = false;
+    });
+    $("#right").live("touchstart", function() {
+        r = true;
+    }).live("touchend", function() {
+        r = false;
+    });
+    $("#fire").live("touchstart", function() {
+        f = true;
+    }).live("touchend", function() {
+        f = false;
+    });
     
-    var bgInc = 20;
-    var ratio = 21/64;
+    var bgInc = (20/640)*canvas.width();
+    var ratio = 21/shipW;
     var distInc = ratio*bgInc;
     var distTravel = 0;
     window.tick = function() {
         //canvas[0].style.backgroundPositionY = parseInt(canvas[0].style.backgroundPositionY||0, 10)+bgInc+"px";
         canvas[0].style.backgroundPosition = "0px "+(parseInt(canvas[0].style.backgroundPosition.split(" ")[1]||0, 10)+bgInc)+"px";
-        console.log("0px "+(parseInt(canvas[0].style.backgroundPosition.split(" ")[1], 10)+20)+"px");
+        //console.log("0px "+(parseInt(canvas[0].style.backgroundPosition.split(" ")[1], 10)+20)+"px");
         
         window.playerShip.update(u,d,l,r,f);
         for(var i=0;i<playerBullets.length;i++) {
@@ -325,19 +369,23 @@ window.onload = function() {
         
     };
     
-    window.scrollTo(0,1);
+    //window.scrollTo(0,1);
     //var canvas = document.getElementById("c");
-    var menuDiv = $("#menu");
-    var canvas = $("#c");
-    var splash = $("#splash");
-    var otherMenu = $("#otherMenu");
-    var stage = new Stage(canvas[0]);
+    
+    if(screen.width<640 || screen.height<480) {
+        canvas[0].width = 320;
+        canvas[0].height = 240;
+        /*canvas.click(function() {
+            f = !f;
+        });*/
+    }
     
     function hideAll() {
         menuDiv.hide();
         canvas.hide();
         splash.hide();
         otherMenu.hide();
+        touchCons.hide();
     }
     
     function menuScreen() {
@@ -357,10 +405,17 @@ window.onload = function() {
         });
         //menuDiv.slideDown(2000);
         $("body").addClass("menuUp");
-        canvg();
+        window.scrollTo(0,1);
+        //canvg();
     }
     var fighting = false;
     function fight(ships) {
+        window.scrollTo(0, 1);
+        document.body.ontouchstart = function(e) {
+            e.preventDefault();
+            return false;
+        };
+        
         fighting = true;
         soundManager.stopAll();
         soundManager.play('Battle');
@@ -368,6 +423,7 @@ window.onload = function() {
         enemies = enemies.concat(ships);
     }
     function unfight() {
+        document.body.ontouchstart = undefined;
         fighting = false;
         soundManager.stopAll();
         soundManager.play('Travel');
@@ -378,6 +434,9 @@ window.onload = function() {
         soundManager.play('Travel');
         hideAll();
         otherMenu.show();
+        if('ontouchstart' in window) {
+            touchCons.show();
+        }
         canvas.show();
         canvas.attr("class", "space");
         canvas.css("background-position", "0px 0px");
@@ -394,21 +453,32 @@ window.onload = function() {
             //console.log("0px "+parseInt(canvas[0].style.backgroundPositionY, 10)+"px");
         //}, 1000/30);
         //console.log(canvas.width);
-        window.playerShip = new PlayerShip(imgs.playerShip, canvas.width()/2-32, canvas.height()*0.75, 64, 64);
-        fight(new EnemyShip(imgs.enemyShip, canvas.width()/2-32, canvas.height()*0.25-64, 64, 64));
+        window.playerShip = new PlayerShip(imgs.playerShip, canvas.width()/2-shipW/2, canvas.height()*0.75, shipW, shipW);
+        //alert(canvas.width()/2-shipW/2);
+        fight(new EnemyShip(imgs.enemyShip, canvas.width()/2-shipW/2, canvas.height()*0.25-shipW, shipW, shipW));
         //window.open(replacementImg("Graphics/starshipdark_flipped.svg"));
         Ticker.setFPS(30);
         Ticker.addListener(window);
     }
     function splashScreen(callback) {
-        splash.fadeIn(2000, function() {
-            splash.fadeOut(500, callback)
+        //soundManager.play("Levelup Sound");
+        /*var s = soundManager.getSoundById("Levelup Sound");
+        console.log(s);
+        s._onfinish = function() {
+            //alert("Ramalamlama Ice Ka dingity Ding de dong.");
+            splash.fadeOut(500, callback);
+        };
+        s.play();*/
+        splash.fadeIn(3000, function() {
+            splash.fadeOut(500, callback);
         });
     }
     
+    var shipW = (64/640)*canvas.width();
     function init() {
         soundManager.url="./Scripts/SoundManager2/swf/soundmanager2.swf";
         soundManager.onready(function() {
+            soundManager.debugMode = false;
             soundManager.createSound({
                 id: 'Travel',
                 url: './Sound/Music/Road Trip.mp3',
@@ -429,6 +499,11 @@ window.onload = function() {
                 id: 'Bullet',
                 url: './Sound/SFX/silencer.wav'
             });
+            /*soundManager.createSound({
+                id: 'Levelup Sound',
+                url: "./Sound/Music/copycat_levelup.wav",
+                autoLoad: true
+            });*/
             $("#audioToggle").click(function() {
                 //soundManager.toggleMute();
                 if(soundManager.getSoundById("Travel").muted) {

@@ -28,9 +28,9 @@ body {
     text-align: center;
     background-color: black;
 }
-canvas {
+/*canvas {
     border: 1px solid silver;
-}
+}*/
 canvas.space {
     /*background-image: url(http://deadlyredcube.com/journal/starfield.jpg);*/
     //background-image: url(http://www.deviantart.com/download/131202690/Space_Backdrop_by_Frostlight.jpg);
@@ -38,6 +38,8 @@ canvas.space {
     background-image: url(../Graphics/space.svg);
     /*-webkit-animation: scroll 5s infinite;
     -webkit-animation-timing-function: linear;*/
+    margin-top: 5px;
+    background-repeat: repeat;
 }
 #menu {
     font-family: SegoeWPRegular, mono;
@@ -100,8 +102,14 @@ canvas.space {
     max-height: 50px;
 }
 
-#menu, #c, #splash, #otherMenu {
+#menu, #c, #splash, #otherMenu, #touchControls {
     display: none;
+}
+#c {
+    -webkit-box-shadow: 0px 0px 10px 3px #fff;
+    -moz-box-shadow: 0px 0px 10px 3px #fff;
+    -o-box-shadow: 0px 0px 10px 3px #fff;
+    box-shadow: 0px 0px 10px 3px #fff;
 }
 
 #splash {
@@ -121,15 +129,15 @@ canvas.space {
     display: inline-block;
 }*/
 /*#otherMenu {
-    padding: 5px;
+    float: left;
+}*
+#otherMenu {
+    margin-bottom: 5px;
 }*/
-#otherMenu div:first-child {
-    border-top-right-radius: 6px;
-}
-#otherMenu div:last-child {
-    border-bottom-right-radius: 6px;
-}
-#audioToggle, #pauseToggle {
+#otherMenu div {
+    display: inline-block;
+/*}
+#audioToggle, #pauseToggle {*/
     width: 30px;
     height: 30px;
     background-color: #aff2af;
@@ -138,6 +146,19 @@ canvas.space {
 #audioToggle img, #pauseToggle img {
     max-width: 100%;
     max-height: 100%;
+}
+
+#touchControls button {
+    width: 84px;
+    height: 42px;
+    border-radius: 0px;
+    -webkit-border-radius: 0px;
+}
+#right {
+    margin-left: 5px;
+}
+#left {
+    margin-right: 5px;
 }
 
 /*@media only screen and (max-width: 550px) {

@@ -2,10 +2,23 @@ body.menuUp {
     background-attachment: fixed;
     /*background-image: url(http://opengameart.org/sites/default/files/sun_softer.png);*/
     background-image: url(http://opengameart.org/sites/default/files/space.png);
-    background-size: 100%;
+    background-size: auto 100%;
     background-repeat: no-repeat;
 }
 
 #menu img::selection {
     background: rgba(0,0,0,0);
+}
+
+#otherMenu div {
+    display: block;
+}
+#otherMenu {
+    float: left;
+}
+#otherMenu div:first-child {
+    border-top-right-radius: 6px;
+}
+#otherMenu div:last-child {
+    border-bottom-right-radius: 6px;
 }

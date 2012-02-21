@@ -4,6 +4,7 @@ An odd mixture of many genres
 ##Attribution
 ###Images
 * [The Noun Project](http://www.thenounproject.com)
+* [code32](http://opengameart.org/users/code32)
 
 ###Music
 * [avgst](http://opengameart.org/users/avgvst)
@@ -76,3 +77,14 @@ An odd mixture of many genres
 * Added Modernizr
 * Fixed bugs in Firefox
 * Began to add images for SVG-less browsers
+
+###February 20th, 2012
+* Continued to make PNGs
+* Mobile Support:
+    * Touch controls
+    * Scalable canvas
+    * Startup image
+    * Glossy icon for home screen
+    * Hid Safari topbar
+    * Moved some CSS around
+    * Continued to work on Android support
