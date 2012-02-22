@@ -14,6 +14,7 @@ An odd mixture of many genres
 
 ###Some Design Elements
 * [Paul M. Watson](http://www.paulmwatson.com)
+* [simurai](http://www.simurai.com/)
 
 ###Libraries
 * [EaselJS](http://easeljs.com)
@@ -88,3 +89,12 @@ An odd mixture of many genres
     * Hid Safari topbar
     * Moved some CSS around
     * Continued to work on Android support
+
+###February 21st, 2012
+* Fixed mobile controls for landscape
+* Changed splash logo
+* Made it so that you tap the canvas to pause on mobiles
+* Hid the secondary menu for mobiles
+* Made ship speed, bullet speed and bullet size relative
+* Hid Safari topbar for splash screen when in landscape
+* Tested on Windows(But haven't been able to get into C9 in IE, though)

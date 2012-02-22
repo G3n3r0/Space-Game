@@ -1,7 +1,7 @@
 @-webkit-keyframes scroll {
     0%   { background-position: 100%; }
     50% { background-position: 50%; }
-	100% { background-position: 100%; }
+    100% { background-position: 100%; }
 }
 @-moz-keyframes scroll {
 	0%   { opacity: 0; }
@@ -112,16 +112,34 @@ canvas.space {
     box-shadow: 0px 0px 10px 3px #fff;
 }
 
+#menu img::selection {
+    background: rgba(0,0,0,0);
+}
+
 #splash {
     color: white;
     font-family: Ubuntu, sans-serif;
+    background: url(http://opengameart.org/sites/default/files/fire1_0060.png) no-repeat center center;
+    background-size: auto 100%;
 }
 #splash h1 {
-    font-size: 100px;
+    font-size: 200px;
     margin: 0px;
+    z-index: 1;
+    /*font: 22em 'Droid Sans', sans-serif;
+    text-transform: uppercase;*/
+    color: transparent;
+    -webkit-text-stroke: 6px rgba(255,255,255,0.05);
+    -moz-text-stroke: 6px rgba(255,255,255,0.05);
+    text-shadow: rgba(245, 245, 255, 0.35) 0 0px 0px, rgba(0, 0, 30, 0.1) 0px 0.04em 0.02em;
+    background: -webkit-linear-gradient(-90deg, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, .3) 50%, rgba(255, 255, 255, 0) 50%, rgba(255, 255, 255, .3) 100% );
+    /*background: -moz-linear-gradient(-90deg, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, .3) 50%, rgba(255, 255, 255, 0) 50%, rgba(255, 255, 255, .3) 100% );*/
+    -webkit-background-clip: text;
+    -moz-background-clip: text;
+    background-clip: text;
 }
 #splash h1 sub {
-    font-size: 50px;
+    font-size: 100px;
 }
 
 /*#otherMenu {
@@ -143,6 +161,9 @@ canvas.space {
     background-color: #aff2af;
     padding: 5px;
 }
+#otherMenu {
+    display: none;
+}
 #audioToggle img, #pauseToggle img {
     max-width: 100%;
     max-height: 100%;
@@ -154,6 +175,16 @@ canvas.space {
     border-radius: 0px;
     -webkit-border-radius: 0px;
 }
+/*body[orient="landscape"] {
+    background-color: pink;
+}*/
+/*body[orient="landscape"] #touchControls button {*/
+#touchControls.landscape button {
+    /*background-color: pink;*/
+    width: 42px;
+    height: 84px;
+}
+
 #right {
     margin-left: 5px;
 }

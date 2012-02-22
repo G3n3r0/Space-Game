@@ -60,8 +60,10 @@ window.onload = function() {
         this.colors = colors;
         this.x = x;
         this.y = y;
-        this.w = 8;
-        this.h = 12;
+        //this.w = 8;
+        this.w = (8/640)*canvas.width();
+        //this.h = 12;
+        this.h = (12/640)*canvas.width();
         this.power = 2;
         this.width = this.w;
         this.height = this.h;
@@ -76,9 +78,11 @@ window.onload = function() {
         this.rect.x = this.x;
         this.rect.y = this.y;
         if(this.type=="friend") {
-            this.spd = -9;
+            //this.spd = -9;
+            this.spd = (-9/640)*canvas.width();
         } else if(this.type=="enemy") {
-            this.spd = 9;
+            //this.spd = 9;
+            this.spd = (9/640)*canvas.width();
         }
         stage.addChild(this.rect);
     }
@@ -100,7 +104,8 @@ window.onload = function() {
         //this.y = y;
         this.y = 0-height;
         this.maxY = y;
-        this.spd = 2;
+        //this.spd = 2;
+        this.spd = (2/640)*canvas.width();
         this.width = width;
         this.height = height;
         this.bit = {x:0,y:0};
@@ -167,7 +172,8 @@ window.onload = function() {
         this.imgSrc = imgSrc;
         this.x = x;
         this.y = y;
-        this.spd = 3;
+        //this.spd = 3;
+        this.spd = (3/640)*canvas.width();
         this.width = width;
         this.height = height;
         this.bit = {x:0,y:0};
@@ -280,11 +286,12 @@ window.onload = function() {
             f = false;
         }
     };
-    /*canvas[0].ontouchstart = function() {
-        f = true;
+    canvas[0].ontouchstart = function() {
+        Ticker.setPaused(!Ticker.getPaused());
+        //soundManager.mute
     }
-    canvas[0].ontouchend = function () {
-        f = false;
+    /*canvas[0].ontouchend = function () {
+        Ticker.setPaused(false);
     };*/
     $("#up").live("touchstart", function() {
         u = true;
@@ -396,7 +403,7 @@ window.onload = function() {
         //menuDiv.hide();
         //splash.hide();
         hideAll();
-        otherMenu.show();
+        //otherMenu.show();
         menuDiv.fadeIn(2000, "easeInElastic", function() {
             if(!soundManager.getSoundById("Travel").muted) {
                 speak("Please select your action.", {pitch: 150});
@@ -433,9 +440,13 @@ window.onload = function() {
         soundManager.stopAll();
         soundManager.play('Travel');
         hideAll();
-        otherMenu.show();
+        //otherMenu.show();
+        /*touchCons.show();
+        touchCons.css("display", "inline-block");*/
         if('ontouchstart' in window) {
             touchCons.show();
+            touchCons.css("display", "inline-block");
+            alert(touchCons[0].style.display);
         }
         canvas.show();
         canvas.attr("class", "space");
@@ -469,9 +480,10 @@ window.onload = function() {
             splash.fadeOut(500, callback);
         };
         s.play();*/
-        splash.fadeIn(3000, function() {
-            splash.fadeOut(500, callback);
+        splash.fadeIn(3000, "linear", function() {
+            splash.fadeOut(500, "linear", callback);
         });
+        window.scrollTo(0, 1);
     }
     
     var shipW = (64/640)*canvas.width();
@@ -531,4 +543,18 @@ window.onload = function() {
         //splashScreen(menuScreen);
     }
     init();
+    
+    var currentWidth;
+    var updateLayout = function() {
+        //alert("Update time!");
+        if (window.innerWidth != currentWidth) {
+            currentWidth = window.innerWidth;
+            var orient = (currentWidth == 320) ? "portrait" : "landscape";
+            document.body.setAttribute("orient", orient);
+            touchCons.attr("class", orient);
+            //window.scrollTo(0, 1);
+            //alert(orient);
+        }
+    };
+    setInterval(updateLayout, 250);
 };
