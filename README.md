@@ -98,3 +98,7 @@ An odd mixture of many genres
 * Made ship speed, bullet speed and bullet size relative
 * Hid Safari topbar for splash screen when in landscape
 * Tested on Windows(But haven't been able to get into C9 in IE, though)
+
+###February 22nd, 2012
+* Began adding some 3D to the canvas
+* Fixed some issues witht the secondary menu

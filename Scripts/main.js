@@ -19,6 +19,18 @@ window.onload = function() {
         imgs.playerShip = "Graphics/starship.png";
         imgs.enemyShip = "Graphics/starshipdark_flipped.png";
     }
+    
+    function make3D() {
+        for(var i in imgs) {
+            var a = new Image();
+            a.i = i;
+            a.onload = function() {
+                imgs[this.i] = threed(this);
+            };
+            a.src = imgs[i];
+        }
+    }
+    
     //var shootInt = 0;
     Array.prototype.findIndex = function(val) {
         for(var i in this) {
@@ -403,7 +415,9 @@ window.onload = function() {
         //menuDiv.hide();
         //splash.hide();
         hideAll();
-        //otherMenu.show();
+        if(!('ontouchstart' in window)) {
+            otherMenu.show();
+        }
         menuDiv.fadeIn(2000, "easeInElastic", function() {
             if(!soundManager.getSoundById("Travel").muted) {
                 speak("Please select your action.", {pitch: 150});
@@ -447,6 +461,8 @@ window.onload = function() {
             touchCons.show();
             touchCons.css("display", "inline-block");
             alert(touchCons[0].style.display);
+        } else {
+            otherMenu.show();
         }
         canvas.show();
         canvas.attr("class", "space");
@@ -542,6 +558,7 @@ window.onload = function() {
         //travelTo(5000);
         //splashScreen(menuScreen);
     }
+    make3D();
     init();
     
     var currentWidth;
