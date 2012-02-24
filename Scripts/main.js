@@ -26,9 +26,12 @@ window.onload = function() {
             a.i = i;
             a.onload = function() {
                 imgs[this.i] = threed(this);
+                //window.open(imgs[this.i]);
             };
             a.src = imgs[i];
         }
+        console.log(imgs);
+        //window.open(imgs.playerShip);
     }
     
     //var shootInt = 0;
@@ -397,6 +400,9 @@ window.onload = function() {
         /*canvas.click(function() {
             f = !f;
         });*/
+    } else if(screen.width>=960 && screen.height>=720) {
+        canvas[0].width = 960;
+        canvas[0].height = 720;
     }
     
     function hideAll() {
@@ -504,6 +510,9 @@ window.onload = function() {
     
     var shipW = (64/640)*canvas.width();
     function init() {
+        if(document.body.webkitRequestFullScreen) document.body.webkitRequestFullScreen(Element.ALLOW_KEYBOARD_INPUT);
+        if(document.body.mozRequestFullScreen) document.body.mozRequestFullScreen();
+    
         soundManager.url="./Scripts/SoundManager2/swf/soundmanager2.swf";
         soundManager.onready(function() {
             soundManager.debugMode = false;
@@ -558,6 +567,7 @@ window.onload = function() {
         //travelTo(5000);
         //splashScreen(menuScreen);
     }
+    
     make3D();
     init();
     
@@ -574,4 +584,5 @@ window.onload = function() {
         }
     };
     setInterval(updateLayout, 250);
+    socketStart();
 };

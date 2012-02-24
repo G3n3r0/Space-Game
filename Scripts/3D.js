@@ -1,22 +1,23 @@
 function threed(img) {
     // http://www.crystalxp.net/forum/en/Graphic-Tutorials/Miscellaneous-graphic-Tutorials/sujet_20570_1.htm
     // creating canvas elements
-    var offset = 3;
+    //var offset = 3;
+    var offset = 12;
     var canvas1 = document.createElement('canvas');
     var canvas2 = document.createElement('canvas');
     // grabbing 2-dimensional context
     var canvasContext = canvas1.getContext('2d');
     var canvasContext2 = canvas2.getContext('2d');
     // resizing <canvas>'s to the size of the image
-    var width = img.width;
-    var height = img.height;
+    var width = img.width*2;
+    var height = img.height*2;
     canvas1.width = width-offset;
     canvas1.height = height;
     canvas2.width = width-offset;
     canvas2.height = height;
     // draw the two images to the <canvas>'s
-    canvasContext.drawImage(img, offset, 0);
-    canvasContext2.drawImage(img, -offset, 0);
+    canvasContext.drawImage(img, offset, 0, width, height);
+    canvasContext2.drawImage(img, -offset, 0, width, height);
     // grab the pixel data from the <canvas>'s
     var imgData = canvasContext.getImageData(0, 0, width, height);
     var imgData2 = canvasContext2.getImageData(0, 0, width, height);

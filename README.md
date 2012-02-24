@@ -101,4 +101,10 @@ An odd mixture of many genres
 
 ###February 22nd, 2012
 * Began adding some 3D to the canvas
-* Fixed some issues witht the secondary menu
+* Fixed some issues with the secondary menu
+
+###February 23rd, 2012
+* Moar 3D
+* Made it so that the canvas is even bigger on large screens
+* Web Sockets Test
+* Fullscreen API
