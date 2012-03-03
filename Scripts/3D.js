@@ -19,7 +19,11 @@ function threed(img) {
     canvasContext.drawImage(img, offset, 0, width, height);
     canvasContext2.drawImage(img, -offset, 0, width, height);
     // grab the pixel data from the <canvas>'s
+    //try {
     var imgData = canvasContext.getImageData(0, 0, width, height);
+    //} catch(e) {
+    //    console.log(img, e);
+    //}
     var imgData2 = canvasContext2.getImageData(0, 0, width, height);
     var data = imgData.data;
     var data2 = imgData2.data;

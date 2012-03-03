@@ -1,8 +1,14 @@
 function socketStart() {
-    var connection = new WebSocket('ws://html5rocks.websocket.org/echo');
+    var server = "ws://html5rocks.websocket.org/echo";
+    //var connection = new WebSocket(server)||new MozWebSocket(server);
+    if(WebSocket) {
+        var connection = new WebSocket(server);
+    } else if(MozWebSocket) {
+        var connection = new MozWebSocket(server);
+    }
     // When the connection is open, send some data to the server
     connection.onopen = function () {
-        connection.send('Ping'); // Send the message 'Ping' to the server
+        connection.send('Derp'); // Send the message 'Ping' to the server
     };
     // Log errors
     connection.onerror = function (error) {

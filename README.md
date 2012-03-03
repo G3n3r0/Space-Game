@@ -108,3 +108,8 @@ An odd mixture of many genres
 * Made it so that the canvas is even bigger on large screens
 * Web Sockets Test
 * Fullscreen API
+
+###March 3rd, 2012
+* Added 3D in the background
+* 3D is all controlled by one variable
+* Attempted to move the space background to C9 so I can 3D it. Didn't work.

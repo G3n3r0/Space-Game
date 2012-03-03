@@ -5,20 +5,39 @@ window.onload = function() {
     var otherMenu = $("#otherMenu");
     var touchCons = $("#touchControls");
     var stage = new Stage(canvas[0]);
+    var three = true;
     
     var imgs = {
-        playerShip: "Graphics/starship.png",
-        enemyShip: "Graphics/starshipdark_flipped.png",
+        playerShip: "Graphics/starship.svg",
+        enemyShip: "Graphics/starshipdark_flipped.svg",
         speaker: "Graphics/Icons/speaker.svg",
         muted: "Graphics/Icons/speaker_muted.svg",
         pause: "Graphics/Icons/stop_hand.svg",
-        play: "Graphics/Icons/right_arrow.svg"
+        play: "Graphics/Icons/right_arrow.svg",
+        stars: "Graphics/space.svg"
     };
     //alert(Modernizr.svg);
-    if(!Modernizr.svg) {
+    if(!Modernizr.svg || three) {
         imgs.playerShip = "Graphics/starship.png";
         imgs.enemyShip = "Graphics/starshipdark_flipped.png";
+        imgs.stars = "Graphics/space.png";
     }
+    
+    function blank() {}
+    var cbs = {
+        playerShip: blank,
+        enemyShip: blank,
+        speaker: blank,
+        muted: blank,
+        pause: blank,
+        play: blank,
+        stars: function() {
+            if(!Modernizr.svg || three) {
+                //console.log(imgs, imgs.stars);
+                canvas.css("background-image", "url("+imgs.stars+")");
+            }
+        }
+    };
     
     function make3D() {
         for(var i in imgs) {
@@ -26,12 +45,33 @@ window.onload = function() {
             a.i = i;
             a.onload = function() {
                 imgs[this.i] = threed(this);
+                cbs[this.i].call();
                 //window.open(imgs[this.i]);
             };
             a.src = imgs[i];
         }
-        console.log(imgs);
+        //console.log(imgs);
         //window.open(imgs.playerShip);
+        /*var i = 0;
+        var nxtImg = function(e) {
+            i += 1;
+            console.log(i);
+            if(i>=imgs.length) {
+                alert("Bazinga!");
+                cb();
+            } else {
+                a = new Image();
+                a.onload = nxtImg;
+                a.src = imgs[i];
+            }
+        };
+        var a = new Image();
+        a.onload = nxtImg;
+        a.src = imgs[i];*/
+    }
+    if(three) {
+        $("#3dstyle").attr("rel", "stylesheet");
+        make3D();
     }
     
     //var shootInt = 0;
@@ -67,6 +107,7 @@ window.onload = function() {
             return false;
         }
     }
+    
     var playerBullets = [];
     var enemyBullets = [];
     var enemies = [];
@@ -510,7 +551,10 @@ window.onload = function() {
     
     var shipW = (64/640)*canvas.width();
     function init() {
-        if(document.body.webkitRequestFullScreen) document.body.webkitRequestFullScreen(Element.ALLOW_KEYBOARD_INPUT);
+        if(document.body.webkitRequestFullScreen) {
+            alert("Durr");
+            document.body.webkitRequestFullScreen(Element.ALLOW_KEYBOARD_INPUT);
+        }
         if(document.body.mozRequestFullScreen) document.body.mozRequestFullScreen();
     
         soundManager.url="./Scripts/SoundManager2/swf/soundmanager2.swf";
@@ -567,8 +611,10 @@ window.onload = function() {
         //travelTo(5000);
         //splashScreen(menuScreen);
     }
-    
-    make3D();
+    /*if(!Modernizr.svg || three) {
+        console.log(imgs, imgs.stars);
+        canvas.css("background-image", "url("+imgs.stars+")");
+    }*/
     init();
     
     var currentWidth;
