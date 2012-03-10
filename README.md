@@ -113,3 +113,6 @@ An odd mixture of many genres
 * Added 3D in the background
 * 3D is all controlled by one variable
 * Attempted to move the space background to C9 so I can 3D it. Didn't work.
+
+###March 9th, 2012
+* Began adding the Planet class, before I decided that my sleep deprivation and lack of memory of what I was in the middle of doing would result in bad things happening.

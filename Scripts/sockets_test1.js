@@ -1,9 +1,9 @@
 function socketStart() {
     var server = "ws://html5rocks.websocket.org/echo";
     //var connection = new WebSocket(server)||new MozWebSocket(server);
-    if(WebSocket) {
+    if(typeof WebSocket != "undefined") {
         var connection = new WebSocket(server);
-    } else if(MozWebSocket) {
+    } else if(typeof MozWebSocket != "undefined") {
         var connection = new MozWebSocket(server);
     }
     // When the connection is open, send some data to the server

@@ -108,6 +108,13 @@ window.onload = function() {
         }
     }
     
+    function Planet(name, color, x, y) {
+        this.name = name;
+        this.color = color;
+        this.x = x;
+        this.y = y;
+    }
+    
     var playerBullets = [];
     var enemyBullets = [];
     var enemies = [];
@@ -552,8 +559,8 @@ window.onload = function() {
     var shipW = (64/640)*canvas.width();
     function init() {
         if(document.body.webkitRequestFullScreen) {
-            alert("Durr");
-            document.body.webkitRequestFullScreen(Element.ALLOW_KEYBOARD_INPUT);
+            //alert("Durr");
+            document.getElementsByTagName("html")[0].webkitRequestFullScreen(Element.ALLOW_KEYBOARD_INPUT);
         }
         if(document.body.mozRequestFullScreen) document.body.mozRequestFullScreen();
     
