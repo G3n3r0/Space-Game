@@ -5,6 +5,7 @@ An odd mixture of many genres
 ###Images
 * [The Noun Project](http://www.thenounproject.com)
 * [code32](http://opengameart.org/users/code32)
+* [eleazzaar](http://opengameart.org/users/eleazzaar)
 
 ###Music
 * [avgst](http://opengameart.org/users/avgvst)
