@@ -108,12 +108,27 @@ window.onload = function() {
         }
     }
     
-    function Planet(name, color, x, y) {
+    function Planet(name, src, x, y) {
         this.name = name;
-        this.color = color;
+        this.src = src;
         this.x = x;
         this.y = y;
+        this.r = 5*shipW;
+        var t = this;
+        this.img = new Image();
+        this.img.onload = function() {
+            t.bit = new Bitmap(this);
+            //t.bit.x = t.x;
+            //t.bit.y = t.y;
+            t.bit.scaleX = t.r*2/this.width;
+            t.bit.scaleY = t.r*2/this.height;
+            //stage.addChild(t.bit);
+            //stage.update();
+        };
+        this.img.src = this.src;
     }
+    var planets = [new Planet("Zaklorg", "Graphics/desert.png", 0, 0), new Planet("Vlag", "Graphics/tundra.png", 1, 1)];
+    var curPlanet = planets[0];
     
     var playerBullets = [];
     var enemyBullets = [];
@@ -464,7 +479,8 @@ window.onload = function() {
     function menuScreen() {
         //canvas.hide();
         $("#fly").click(function() {
-            travelTo(parseInt(prompt("How far away?"), 10));
+            //travelTo(parseInt(prompt("How far away?"), 10));
+            travelTo(planets[0], planets[1]);
         });
         //menuDiv.hide();
         //splash.hide();
@@ -504,7 +520,8 @@ window.onload = function() {
         soundManager.play('Travel');
     }
     
-    function travelTo(dist) {
+    function travelTo(from, to) {
+        var dist = Math.sqrt(Math.pow(from.x-to.x, 2)+Math.pow(from.y-to.y, 2));
         soundManager.stopAll();
         soundManager.play('Travel');
         hideAll();

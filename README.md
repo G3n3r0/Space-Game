@@ -116,3 +116,9 @@ An odd mixture of many genres
 
 ###March 9th, 2012
 * Began adding the Planet class, before I decided that my sleep deprivation and lack of memory of what I was in the middle of doing would result in bad things happening.
+* Mysteriously got the space background to appear
+
+###March 10th, 2012
+* Added Planet class
+* Began designing interstellar distance system
+* Added some planet graphics
