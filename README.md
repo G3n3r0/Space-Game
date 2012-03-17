@@ -123,3 +123,9 @@ An odd mixture of many genres
 * Added Planet class
 * Began designing interstellar distance system
 * Added some planet graphics
+
+###March 16th, 2012
+* Finished up planet class
+* Changed up the travelTo to unpause the ticker
+* Changed planet scale
+* Added planet name to menu screen

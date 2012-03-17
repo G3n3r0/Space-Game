@@ -51,6 +51,9 @@ canvas.space {
     //width: 95%;
     text-align: center;
 }
+#menu h1 {
+    color: white;
+}
 #menu ul {
     //width: 100%;
     //height: 100%;

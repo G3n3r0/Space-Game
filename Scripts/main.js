@@ -1,4 +1,5 @@
 window.onload = function() {
+    var ship2plan = 20;
     var menuDiv = $("#menu");
     var canvas = $("#c");
     var splash = $("#splash");
@@ -24,6 +25,19 @@ window.onload = function() {
     }
     
     function blank() {}
+    
+    if(screen.width<640 || screen.height<480) {
+        canvas[0].width = 320;
+        canvas[0].height = 240;
+        /*canvas.click(function() {
+            f = !f;
+        });*/
+    } else if(screen.width>=960 && screen.height>=720) {
+        canvas[0].width = 960;
+        canvas[0].height = 720;
+    }
+    var shipW = (64/640)*canvas.width();
+    
     var cbs = {
         playerShip: blank,
         enemyShip: blank,
@@ -113,13 +127,14 @@ window.onload = function() {
         this.src = src;
         this.x = x;
         this.y = y;
-        this.r = 5*shipW;
+        this.r = ship2plan*shipW;
         var t = this;
         this.img = new Image();
         this.img.onload = function() {
             t.bit = new Bitmap(this);
             //t.bit.x = t.x;
             //t.bit.y = t.y;
+            console.log(t, t.r, this.width);
             t.bit.scaleX = t.r*2/this.width;
             t.bit.scaleY = t.r*2/this.height;
             //stage.addChild(t.bit);
@@ -127,8 +142,8 @@ window.onload = function() {
         };
         this.img.src = this.src;
     }
-    var planets = [new Planet("Zaklorg", "Graphics/desert.png", 0, 0), new Planet("Vlag", "Graphics/tundra.png", 1, 1)];
-    var curPlanet = planets[0];
+    var planets = [new Planet("Zaklorg", "Graphics/desert.png", 0, 0), new Planet("Vlag", "Graphics/tundra.png", 5, 3)];
+    //var curPlanet = planets[0];
     
     var playerBullets = [];
     var enemyBullets = [];
@@ -399,14 +414,32 @@ window.onload = function() {
     
     var bgInc = (20/640)*canvas.width();
     var ratio = 21/shipW;
-    var distInc = ratio*bgInc;
-    var distTravel = 0;
+    //var distInc = ratio*bgInc;
+    //var distTravel = 0;
     window.tick = function() {
         //canvas[0].style.backgroundPositionY = parseInt(canvas[0].style.backgroundPositionY||0, 10)+bgInc+"px";
         canvas[0].style.backgroundPosition = "0px "+(parseInt(canvas[0].style.backgroundPosition.split(" ")[1]||0, 10)+bgInc)+"px";
         //console.log("0px "+(parseInt(canvas[0].style.backgroundPosition.split(" ")[1], 10)+20)+"px");
         
         window.playerShip.update(u,d,l,r,f);
+        if(window.to && window.from) {
+            window.from.bit.y += window.playerShip.spd;
+            window.to.bit.y += window.playerShip.spd;
+            /*window.from.bit.y += bgInc;
+            window.to.bit.y += bgInc;*/
+            if(E(window.playerShip, window.to.bit)) {
+                window.curPlanet = window.to;
+                console.log(curPlanet);
+                //window.to = null;
+                window.from = null;
+                playerBullets = [];
+                stage.removeAllChildren();
+                stage.update();
+                Ticker.setPaused(true);
+                menuScreen();
+            }
+            //stage.update();
+        }
         for(var i=0;i<playerBullets.length;i++) {
             playerBullets[i].update();
         }
@@ -457,17 +490,6 @@ window.onload = function() {
     //window.scrollTo(0,1);
     //var canvas = document.getElementById("c");
     
-    if(screen.width<640 || screen.height<480) {
-        canvas[0].width = 320;
-        canvas[0].height = 240;
-        /*canvas.click(function() {
-            f = !f;
-        });*/
-    } else if(screen.width>=960 && screen.height>=720) {
-        canvas[0].width = 960;
-        canvas[0].height = 720;
-    }
-    
     function hideAll() {
         menuDiv.hide();
         canvas.hide();
@@ -477,7 +499,10 @@ window.onload = function() {
     }
     
     function menuScreen() {
+        //console.log(1, window.curPlanet);
+        window.curPlanet = window.curPlanet||planets[0];
         //canvas.hide();
+        $("#curPlan").html(window.curPlanet.name);
         $("#fly").click(function() {
             //travelTo(parseInt(prompt("How far away?"), 10));
             travelTo(planets[0], planets[1]);
@@ -521,7 +546,25 @@ window.onload = function() {
     }
     
     function travelTo(from, to) {
+        Ticker.setPaused(false);
         var dist = Math.sqrt(Math.pow(from.x-to.x, 2)+Math.pow(from.y-to.y, 2));
+        from.bit.x = canvas[0].width/2-from.img.width*from.bit.scaleX/2;
+        from.bit.y = 0;
+        from.bit.width = from.img.width*from.bit.scaleX;
+        from.bit.height = from.img.height*from.bit.scaleY;
+        //console.log(from.bit);
+        stage.addChild(from.bit);
+        
+        to.bit.x = from.bit.x;
+        to.bit.y = -ship2plan*to.img.height*dist+to.img.height/2;
+        to.bit.width = to.img.width*to.bit.scaleX;
+        to.bit.height = to.img.height*to.bit.scaleY;
+        stage.addChild(to.bit);
+        console.log(to.bit);
+        //to.bit.y = 5*
+        stage.update();
+        window.from = from;
+        window.to = to;
         soundManager.stopAll();
         soundManager.play('Travel');
         hideAll();
@@ -573,7 +616,6 @@ window.onload = function() {
         window.scrollTo(0, 1);
     }
     
-    var shipW = (64/640)*canvas.width();
     function init() {
         if(document.body.webkitRequestFullScreen) {
             //alert("Durr");
