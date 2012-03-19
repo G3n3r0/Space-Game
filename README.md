@@ -129,3 +129,6 @@ An odd mixture of many genres
 * Changed up the travelTo to unpause the ticker
 * Changed planet scale
 * Added planet name to menu screen
+
+###March 18th, 2012
+* Began work on map

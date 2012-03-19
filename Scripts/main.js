@@ -5,6 +5,8 @@ window.onload = function() {
     var splash = $("#splash");
     var otherMenu = $("#otherMenu");
     var touchCons = $("#touchControls");
+    var map = $("#map");
+    var mapStage = new Stage(map[0]);
     var stage = new Stage(canvas[0]);
     var three = true;
     
@@ -429,7 +431,7 @@ window.onload = function() {
             window.to.bit.y += bgInc;*/
             if(E(window.playerShip, window.to.bit)) {
                 window.curPlanet = window.to;
-                console.log(curPlanet);
+                //console.log(curPlanet);
                 //window.to = null;
                 window.from = null;
                 playerBullets = [];
@@ -496,8 +498,20 @@ window.onload = function() {
         splash.hide();
         otherMenu.hide();
         touchCons.hide();
+        map.hide();
     }
     
+    function mapScreen() {
+        hideAll();
+        map.show();
+        mapStage.removeAllChildren();
+        var size = map.width()/100;
+        /*for(var y=0;y<100;y++) {
+            for(var x=0;x<100;x++) {
+                
+            }
+        }*/
+    }
     function menuScreen() {
         //console.log(1, window.curPlanet);
         window.curPlanet = window.curPlanet||planets[0];
