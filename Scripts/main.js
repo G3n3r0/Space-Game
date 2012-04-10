@@ -6,9 +6,11 @@ window.onload = function() {
     var otherMenu = $("#otherMenu");
     var touchCons = $("#touchControls");
     var map = $("#map");
-    var mapStage = new Stage(map[0]);
+    var mapC = $("#mapCanv");
+    var mapStage = new Stage(mapC[0]);
     var stage = new Stage(canvas[0]);
-    var three = true;
+    var three = false;
+    var speakingOpts = {pitch: 150};
     
     var imgs = {
         playerShip: "Graphics/starship.svg",
@@ -28,16 +30,25 @@ window.onload = function() {
     
     function blank() {}
     
-    if(screen.width<640 || screen.height<480) {
+    /*if(screen.width<640 || screen.height<480) {
         canvas[0].width = 320;
         canvas[0].height = 240;
         /*canvas.click(function() {
             f = !f;
-        });*/
+        });*
     } else if(screen.width>=960 && screen.height>=720) {
         canvas[0].width = 960;
         canvas[0].height = 720;
+    }*/
+    if(screen.width>screen.height) {
+        canvas[0].height = screen.height-10;
+        canvas[0].width = screen.height-10;
+    } else {
+        canvas[0].width = screen.width-10;
+        canvas[0].height = screen.width-10;
     }
+    mapC[0].width = canvas[0].width-25;
+    mapC[0].height = canvas[0].height-25;
     var shipW = (64/640)*canvas.width();
     
     var cbs = {
@@ -144,12 +155,12 @@ window.onload = function() {
         };
         this.img.src = this.src;
     }
-    var planets = [new Planet("Zaklorg", "Graphics/desert.png", 0, 0), new Planet("Vlag", "Graphics/tundra.png", 5, 3)];
+    var planets = [new Planet("Zaklorg", "http://opengameart.org/sites/default/files/PlanetRed.png", 0, 0), new Planet("Vlag", "Graphics/tundra.png", 5, 3), new Planet("Shukal", "Graphics/desert.png", 9, 9)];
     //var curPlanet = planets[0];
     
     var playerBullets = [];
     var enemyBullets = [];
-    var enemies = [];
+    window.enemies = [];
     
     function Bullet(colors,x,y,type) {
         this.colors = colors;
@@ -429,6 +440,7 @@ window.onload = function() {
             window.to.bit.y += window.playerShip.spd;
             /*window.from.bit.y += bgInc;
             window.to.bit.y += bgInc;*/
+            console.log(window.to.bit.y);
             if(E(window.playerShip, window.to.bit)) {
                 window.curPlanet = window.to;
                 //console.log(curPlanet);
@@ -460,6 +472,7 @@ window.onload = function() {
             }
             if(enemies[j].health<=0) {
                 //alert("enemy killed");
+                console.log(soundManager.play("Explosion"));
                 stage.removeChild(enemies[j].bit);
                 enemies.removeIt(enemies[j]);
                 //unfight();
@@ -478,6 +491,7 @@ window.onload = function() {
         window.playerShip.shootInt += 1000/Ticker.getFPS();
         if(window.playerShip.health<=0) {
             //alert("You died!");
+            soundManager.play("Explosion");
             Ticker.setPaused(true);
             menuScreen();
         }
@@ -502,34 +516,70 @@ window.onload = function() {
     }
     
     function mapScreen() {
+        mapStage.mouseEnabled = true;
+        mapStage.enableMouseOver(25);
+        mapStage.removeAllChildren();
         hideAll();
         map.show();
-        mapStage.removeAllChildren();
-        var size = map.width()/100;
+        speak("Select your destination.");
+        var size = mapC[0].width/10;
         /*for(var y=0;y<100;y++) {
             for(var x=0;x<100;x++) {
                 
             }
         }*/
+        var g = new Graphics();
+        g.beginFill("rgba(0, 0, 255, 0.5)");
+        g.drawRect(0, 0, size, size);
+        //g.drawCircle(size/2, size/2, size/2);
+        var s = new Shape(g);
+        s.x = window.curPlanet.x*size;
+        s.y = window.curPlanet.y*size;
+        //mapStage.addChild(s);
+        //console.log(s);
+        var img = new Image();
+        img.onload = function() {
+            for(var i=0;i<planets.length;i++) {
+                var b = new Bitmap(this);
+                b.x = planets[i].x*size;
+                b.y = planets[i].y*size;
+                b.planet = planets[i];
+                b.scaleX = b.scaleY = size/this.width;
+                b.y += (size-b.scaleY*this.height)/2;
+                b.onMouseOver = function(e) {
+                    //console.log(this.planet.name);
+                    $("#mapDesc b").text(this.planet.name);
+                }
+                b.onClick = function(e) {
+                    if(this.planet!=window.curPlanet) {
+                        travelTo(window.curPlanet, this.planet);
+                    }
+                }
+                mapStage.addChild(b);
+            }
+            mapStage.addChild(s);
+            mapStage.update();
+        };
+        img.src = "Graphics/Icons/planet.png";
     }
     function menuScreen() {
+        document.body.setAttribute("class", "");
         //console.log(1, window.curPlanet);
         window.curPlanet = window.curPlanet||planets[0];
         //canvas.hide();
         $("#curPlan").html(window.curPlanet.name);
-        $("#fly").click(function() {
-            //travelTo(parseInt(prompt("How far away?"), 10));
-            travelTo(planets[0], planets[1]);
-        });
         //menuDiv.hide();
         //splash.hide();
         hideAll();
+        soundManager.stopAll();
         if(!('ontouchstart' in window)) {
             otherMenu.show();
         }
         menuDiv.fadeIn(2000, "easeInElastic", function() {
             if(!soundManager.getSoundById("Travel").muted) {
-                speak("Please select your action.", {pitch: 150});
+                //speak("Please select your action.", {pitch: 150});
+                var responses = ["Please select your action.", "What will you do now?", "What course will you follow now?"];
+                speak("Welcome to "+window.curPlanet.name+". "+responses[Math.floor(Math.random()*responses.length)], speakingOpts);
             }
             //alert("Boom");
         });
@@ -548,9 +598,12 @@ window.onload = function() {
         
         fighting = true;
         soundManager.stopAll();
-        soundManager.play('Battle');
+        var n = Math.floor(Math.random()*(window.numBattleSongs))+1;
+        //console.log(n);
+        soundManager.play('Battle'+n);
         
         enemies = enemies.concat(ships);
+        console.log(enemies);
     }
     function unfight() {
         document.body.ontouchstart = undefined;
@@ -560,8 +613,11 @@ window.onload = function() {
     }
     
     function travelTo(from, to) {
+        var sh = 128;
+        stage.removeAllChildren();
         Ticker.setPaused(false);
         var dist = Math.sqrt(Math.pow(from.x-to.x, 2)+Math.pow(from.y-to.y, 2));
+        alert(dist);
         from.bit.x = canvas[0].width/2-from.img.width*from.bit.scaleX/2;
         from.bit.y = 0;
         from.bit.width = from.img.width*from.bit.scaleX;
@@ -570,7 +626,7 @@ window.onload = function() {
         stage.addChild(from.bit);
         
         to.bit.x = from.bit.x;
-        to.bit.y = -ship2plan*to.img.height*dist+to.img.height/2;
+        to.bit.y = -ship2plan*sh*dist+to.img.height/2;
         to.bit.width = to.img.width*to.bit.scaleX;
         to.bit.height = to.img.height*to.bit.scaleY;
         stage.addChild(to.bit);
@@ -594,6 +650,7 @@ window.onload = function() {
         }
         canvas.show();
         canvas.attr("class", "space");
+        $("body").attr("class", "space");
         canvas.css("background-position", "0px 0px");
         //menuDiv.hide();
         //splash.hide();
@@ -608,9 +665,9 @@ window.onload = function() {
             //console.log("0px "+parseInt(canvas[0].style.backgroundPositionY, 10)+"px");
         //}, 1000/30);
         //console.log(canvas.width);
-        window.playerShip = new PlayerShip(imgs.playerShip, canvas.width()/2-shipW/2, canvas.height()*0.75, shipW, shipW);
+        window.playerShip = window.playerShip||new PlayerShip(imgs.playerShip, canvas.width()/2-shipW/2, canvas.height()*0.75, shipW, shipW);
         //alert(canvas.width()/2-shipW/2);
-        fight(new EnemyShip(imgs.enemyShip, canvas.width()/2-shipW/2, canvas.height()*0.25-shipW, shipW, shipW));
+        fight([new EnemyShip(imgs.enemyShip, canvas.width()/2-shipW/2, canvas.height()*0.25-shipW, shipW, shipW)]);
         //window.open(replacementImg("Graphics/starshipdark_flipped.svg"));
         Ticker.setFPS(30);
         Ticker.addListener(window);
@@ -631,34 +688,70 @@ window.onload = function() {
     }
     
     function init() {
+        hideAll();
+        $("#fly").click(function() {
+            //travelTo(parseInt(prompt("How far away?"), 10));
+            //travelTo(planets[0], planets[1]);
+            mapScreen();
+        });
+        var fsString = "Do you want to go fullscreen? This is recommended.";
         if(document.body.webkitRequestFullScreen) {
             //alert("Durr");
-            document.getElementsByTagName("html")[0].webkitRequestFullScreen(Element.ALLOW_KEYBOARD_INPUT);
+            if(confirm(fsString)) {
+                document.documentElement.webkitRequestFullScreen(Element.ALLOW_KEYBOARD_INPUT);
+            }
+        } else if(document.body.mozRequestFullScreen) {
+            if(confirm(fsString)) {
+                document.documentElement.mozRequestFullScreen();
+            }
+        } else {
+            alert("It is recommended that you go fullscreen. In most browsers, hit F11.");
         }
-        if(document.body.mozRequestFullScreen) document.body.mozRequestFullScreen();
-    
+        
         soundManager.url="./Scripts/SoundManager2/swf/soundmanager2.swf";
+        soundManager.defaultOptions.autoLoad = true;
+        soundManager.defaultOptions.autoPlay = false;
         soundManager.onready(function() {
-            soundManager.debugMode = false;
             soundManager.createSound({
                 id: 'Travel',
-                url: './Sound/Music/Road Trip.mp3',
+                //url: './Sound/Music/Road Trip.mp3',
+                url: "http://wrathgames.com/blog/wp-content/plugins/download-monitor/download.php?id=74",
+                volume: 50,
                 onfinish: function() {
                     //console.log(this);
                     this.play();
                 }
             });
+            var battleVol = 75;
+            window.numBattleSongs = 2;
             soundManager.createSound({
-                id: "Battle",
-                url: "./Sound/Music/Rusty Boss-man Tussle.mp3",
+                id: "Battle1",
+                volume: battleVol,
+                //url: "./Sound/Music/Rusty Boss-man Tussle.mp3",
+                url: "http://wrathgames.com/blog/resources/music/35/run_128.mp3",
                 onfinish: function() {
                     //console.log(this);
                     this.play()
                 }
             });
             soundManager.createSound({
+                id: "Battle2",
+                volume: battleVol,
+                //url: "./Sound/Music/Rusty Boss-man Tussle.mp3",
+                url: "http://wrathgames.com/blog/resources/music/26/dragon_king_128.mp3",
+                onfinish: function() {
+                    //console.log(this);
+                    this.play()
+                }
+            });
+            
+            soundManager.createSound({
                 id: 'Bullet',
                 url: './Sound/SFX/silencer.wav'
+            });
+            soundManager.createSound({
+                id: "Explosion",
+                url: "http://wrathgames.com/blog/resources/sound/1/explosion1.mp3",
             });
             /*soundManager.createSound({
                 id: 'Levelup Sound',
@@ -695,6 +788,8 @@ window.onload = function() {
         console.log(imgs, imgs.stars);
         canvas.css("background-image", "url("+imgs.stars+")");
     }*/
+    soundManager.debugMode = false;
+    hideAll();
     init();
     
     var currentWidth;

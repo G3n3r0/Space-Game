@@ -6,12 +6,15 @@ An odd mixture of many genres
 * [The Noun Project](http://www.thenounproject.com)
 * [code32](http://opengameart.org/users/code32)
 * [eleazzaar](http://opengameart.org/users/eleazzaar)
+* [wojtar-stock](http://wojtar-stock.deviantart.com/)
 
 ###Music
 * [avgst](http://opengameart.org/users/avgvst)
+* [WrathGames Studio](http://wrathgames.com/blog/)
 
 ###Sound Effects
 * [bart](http://opengameart.org/users/bart)
+* [WrathGames Studio](http://wrathgames.com/blog/)
 
 ###Some Design Elements
 * [Paul M. Watson](http://www.paulmwatson.com)
@@ -55,8 +58,8 @@ An odd mixture of many genres
 * Made bullets gradients
 
 ###February 5th, 2012
-* Added Enemy class
-* Made changes to the Bullet class
+* Added `Enemy` class
+* Made changes to the `Bullet` class
 * Added enemy bullet array
 
 ###February 17th, 2012
@@ -116,7 +119,7 @@ An odd mixture of many genres
 * Attempted to move the space background to C9 so I can 3D it. Didn't work.
 
 ###March 9th, 2012
-* Began adding the Planet class, before I decided that my sleep deprivation and lack of memory of what I was in the middle of doing would result in bad things happening.
+* Began adding the `Planet` class, before I decided that my sleep deprivation and lack of memory of what I was in the middle of doing would result in bad things happening.
 * Mysteriously got the space background to appear
 
 ###March 10th, 2012
@@ -126,9 +129,26 @@ An odd mixture of many genres
 
 ###March 16th, 2012
 * Finished up planet class
-* Changed up the travelTo to unpause the ticker
+* Changed up the `travelTo` to unpause the ticker
 * Changed planet scale
 * Added planet name to menu screen
 
 ###March 18th, 2012
 * Began work on map
+
+###March 30th, 2012
+* Added some more SFX
+* Changed travelling music
+* Added multiple battle tunes
+* Made sounds preload by default
+
+###April 9th, 2012
+* Made the travel canvas be as big as possible
+* Finished map
+* Added metal texture for travelling
+* Set the map scale to something a little more standard(It previously depended on the planet image size)
+* Made the standard font Segoe WP
+* Moved the speak.js options into one object
+* Made the ship persist between planets
+* New fullscreen dialog
+* Moved the setting of the onclick handler to `init`
