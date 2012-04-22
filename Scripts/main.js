@@ -147,7 +147,7 @@ window.onload = function() {
             t.bit = new Bitmap(this);
             //t.bit.x = t.x;
             //t.bit.y = t.y;
-            console.log(t, t.r, this.width);
+            //console.log(t, t.r, this.width);
             t.bit.scaleX = t.r*2/this.width;
             t.bit.scaleY = t.r*2/this.height;
             //stage.addChild(t.bit);
@@ -440,7 +440,7 @@ window.onload = function() {
             window.to.bit.y += window.playerShip.spd;
             /*window.from.bit.y += bgInc;
             window.to.bit.y += bgInc;*/
-            console.log(window.to.bit.y);
+            //console.log(window.to.bit.y);
             if(E(window.playerShip, window.to.bit)) {
                 window.curPlanet = window.to;
                 //console.log(curPlanet);
@@ -460,7 +460,8 @@ window.onload = function() {
         //console.log(playerBullets);
         for(var j=0;j<enemies.length;j++) {
             enemies[j].update(window.playerShip);
-            enemies[j].shootInt += 1000/Ticker.getFPS();
+            //enemies[j].shootInt += 1000/Ticker.getFPS();
+            enemies[j].shootInt += 1000/30;
             
             for(var m=0;m<playerBullets.length;m++) {
                 if(E(enemies[j], playerBullets[m])) {
@@ -472,7 +473,7 @@ window.onload = function() {
             }
             if(enemies[j].health<=0) {
                 //alert("enemy killed");
-                console.log(soundManager.play("Explosion"));
+                soundManager.play("Explosion");
                 stage.removeChild(enemies[j].bit);
                 enemies.removeIt(enemies[j]);
                 //unfight();
@@ -488,7 +489,8 @@ window.onload = function() {
             }
         }
         stage.update();
-        window.playerShip.shootInt += 1000/Ticker.getFPS();
+        //window.playerShip.shootInt += 1000/Ticker.getFPS();
+        window.playerShip.shootInt += 1000/30;
         if(window.playerShip.health<=0) {
             //alert("You died!");
             soundManager.play("Explosion");
@@ -603,7 +605,7 @@ window.onload = function() {
         soundManager.play('Battle'+n);
         
         enemies = enemies.concat(ships);
-        console.log(enemies);
+        //console.log(enemies);
     }
     function unfight() {
         document.body.ontouchstart = undefined;
@@ -630,7 +632,7 @@ window.onload = function() {
         to.bit.width = to.img.width*to.bit.scaleX;
         to.bit.height = to.img.height*to.bit.scaleY;
         stage.addChild(to.bit);
-        console.log(to.bit);
+        //console.log(to.bit);
         //to.bit.y = 5*
         stage.update();
         window.from = from;
@@ -669,7 +671,7 @@ window.onload = function() {
         //alert(canvas.width()/2-shipW/2);
         fight([new EnemyShip(imgs.enemyShip, canvas.width()/2-shipW/2, canvas.height()*0.25-shipW, shipW, shipW)]);
         //window.open(replacementImg("Graphics/starshipdark_flipped.svg"));
-        Ticker.setFPS(30);
+        Ticker.setFPS(60);
         Ticker.addListener(window);
     }
     function splashScreen(callback) {
@@ -687,7 +689,7 @@ window.onload = function() {
         window.scrollTo(0, 1);
     }
     
-    function init() {
+    window.init = function() {
         hideAll();
         $("#fly").click(function() {
             //travelTo(parseInt(prompt("How far away?"), 10));
@@ -695,7 +697,7 @@ window.onload = function() {
             mapScreen();
         });
         var fsString = "Do you want to go fullscreen? This is recommended.";
-        if(document.body.webkitRequestFullScreen) {
+        /*if(document.body.webkitRequestFullScreen) {
             //alert("Durr");
             if(confirm(fsString)) {
                 document.documentElement.webkitRequestFullScreen(Element.ALLOW_KEYBOARD_INPUT);
@@ -706,12 +708,13 @@ window.onload = function() {
             }
         } else {
             alert("It is recommended that you go fullscreen. In most browsers, hit F11.");
-        }
+        }*/
         
-        soundManager.url="./Scripts/SoundManager2/swf/soundmanager2.swf";
+        soundManager.url="Scripts/SoundManager2/swf/soundmanager2.swf";
         soundManager.defaultOptions.autoLoad = true;
         soundManager.defaultOptions.autoPlay = false;
         soundManager.onready(function() {
+            console.log("SoundManager ready");
             soundManager.createSound({
                 id: 'Travel',
                 //url: './Sound/Music/Road Trip.mp3',
@@ -780,6 +783,18 @@ window.onload = function() {
             //soundManager.play('Battle');
             splashScreen(menuScreen);
         });
+        soundManager.ontimeout(function(status) {
+            console.log("SM2 Error", status);
+            window.soundManager = {
+                play: function() {},
+                stopAll: function(){},
+                getSoundById: function() {
+                    return {muted: false};
+                }
+            };
+            splashScreen(menuScreen);
+        });
+        //splashScreen(menuScreen);
         //menuScreen();
         //travelTo(5000);
         //splashScreen(menuScreen);
@@ -788,7 +803,8 @@ window.onload = function() {
         console.log(imgs, imgs.stars);
         canvas.css("background-image", "url("+imgs.stars+")");
     }*/
-    soundManager.debugMode = false;
+    //soundManager.debugMode = false;
+    //soundManager.useHighPerformance = true;
     hideAll();
     init();
     
@@ -804,6 +820,8 @@ window.onload = function() {
             //alert(orient);
         }
     };
-    setInterval(updateLayout, 250);
-    socketStart();
+    if('ontouchstart' in window) {
+        setInterval(updateLayout, 250);
+    }
+    //socketStart();
 };

@@ -152,3 +152,11 @@ An odd mixture of many genres
 * Made the ship persist between planets
 * New fullscreen dialog
 * Moved the setting of the onclick handler to `init`
+
+###April 21st, 2012
+* Got Firefox working
+* Added a function to handle SM2 errors
+* Increased framerate to 60 FPS
+* Switched to local version of space BG
+* Going to add a more compressed version of above
+* Ended up changing SM2 back to debug mode, will undo

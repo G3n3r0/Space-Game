@@ -1,7 +1,8 @@
 body.menuUp {
     background-attachment: fixed;
-    /*background-image: url(http://opengameart.org/sites/default/files/sun_softer.png);*/
-    background-image: url(http://opengameart.org/sites/default/files/space.png);
+    /*background-image: url(http://opengameart.org/sites/default/files/sun_softer.png);
+    background-image: url(http://opengameart.org/sites/default/files/space.png);*/
+    background-image: url(../Graphics/space_bg.png);
     /*background-size: auto 100%;*/
     background-size: cover;
     background-repeat: no-repeat;
