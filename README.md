@@ -160,3 +160,8 @@ An odd mixture of many genres
 * Switched to local version of space BG
 * Going to add a more compressed version of above
 * Ended up changing SM2 back to debug mode, will undo
+
+###April 22nd, 2012
+* Switched from jQuery to zepto.js
+* Converted all canvas.width()s to canvas[0].width
+* Switched SM2 out of debug

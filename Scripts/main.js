@@ -2,6 +2,7 @@ window.onload = function() {
     var ship2plan = 20;
     var menuDiv = $("#menu");
     var canvas = $("#c");
+    //console.log(canvas);
     var splash = $("#splash");
     var otherMenu = $("#otherMenu");
     var touchCons = $("#touchControls");
@@ -49,7 +50,7 @@ window.onload = function() {
     }
     mapC[0].width = canvas[0].width-25;
     mapC[0].height = canvas[0].height-25;
-    var shipW = (64/640)*canvas.width();
+    var shipW = (64/640)*canvas[0].width;
     
     var cbs = {
         playerShip: blank,
@@ -167,9 +168,9 @@ window.onload = function() {
         this.x = x;
         this.y = y;
         //this.w = 8;
-        this.w = (8/640)*canvas.width();
+        this.w = (8/640)*canvas[0].width;
         //this.h = 12;
-        this.h = (12/640)*canvas.width();
+        this.h = (12/640)*canvas[0].width;
         this.power = 2;
         this.width = this.w;
         this.height = this.h;
@@ -185,10 +186,10 @@ window.onload = function() {
         this.rect.y = this.y;
         if(this.type=="friend") {
             //this.spd = -9;
-            this.spd = (-9/640)*canvas.width();
+            this.spd = (-9/640)*canvas[0].width;
         } else if(this.type=="enemy") {
             //this.spd = 9;
-            this.spd = (9/640)*canvas.width();
+            this.spd = (9/640)*canvas[0].width;
         }
         stage.addChild(this.rect);
     }
@@ -199,7 +200,7 @@ window.onload = function() {
         if(this.type == "friend" && this.y<-this.h) {
             //console.log("badoom");
             playerBullets.removeIt(this);
-        } else if(this.type=="enemy" && this.y>canvas.height()) {
+        } else if(this.type=="enemy" && this.y>canvas[0].height) {
             enemyBullets.removeIt(this);
         }
     };
@@ -211,7 +212,7 @@ window.onload = function() {
         this.y = 0-height;
         this.maxY = y;
         //this.spd = 2;
-        this.spd = (2/640)*canvas.width();
+        this.spd = (2/640)*canvas[0].width;
         this.width = width;
         this.height = height;
         this.bit = {x:0,y:0};
@@ -279,7 +280,7 @@ window.onload = function() {
         this.x = x;
         this.y = y;
         //this.spd = 3;
-        this.spd = (3/640)*canvas.width();
+        this.spd = (3/640)*canvas[0].width;
         this.width = width;
         this.height = height;
         this.bit = {x:0,y:0};
@@ -334,11 +335,11 @@ window.onload = function() {
         if(l) vx -= this.spd;
         if(r) vx += this.spd;
         this.x += vx;
-        if(this.x>canvas.width()-this.width || this.x<0) {
+        if(this.x>canvas[0].width-this.width || this.x<0) {
             this.x -= vx;
         }
         this.y += vy;
-        if(this.y>canvas.height()-this.height || this.y<0) {
+        if(this.y>canvas[0].height-this.height || this.y<0) {
             this.y -= vy;
         }
         this.bit.x = this.x;
@@ -425,13 +426,16 @@ window.onload = function() {
         f = false;
     });
     
-    var bgInc = (20/640)*canvas.width();
+    var bgInc = (20/640)*canvas[0].width;
     var ratio = 21/shipW;
     //var distInc = ratio*bgInc;
     //var distTravel = 0;
     window.tick = function() {
+        //console.log("tick");
         //canvas[0].style.backgroundPositionY = parseInt(canvas[0].style.backgroundPositionY||0, 10)+bgInc+"px";
         canvas[0].style.backgroundPosition = "0px "+(parseInt(canvas[0].style.backgroundPosition.split(" ")[1]||0, 10)+bgInc)+"px";
+        //console.log(parseInt(canvas[0].style.backgroundPosition.split(" ")[1]||0, 10)+bgInc)
+        
         //console.log("0px "+(parseInt(canvas[0].style.backgroundPosition.split(" ")[1], 10)+20)+"px");
         
         window.playerShip.update(u,d,l,r,f);
@@ -577,14 +581,24 @@ window.onload = function() {
         if(!('ontouchstart' in window)) {
             otherMenu.show();
         }
-        menuDiv.fadeIn(2000, "easeInElastic", function() {
+        /*menuDiv.fadeIn(2000, "easeInElastic", function() {
             if(!soundManager.getSoundById("Travel").muted) {
                 //speak("Please select your action.", {pitch: 150});
                 var responses = ["Please select your action.", "What will you do now?", "What course will you follow now?"];
                 speak("Welcome to "+window.curPlanet.name+". "+responses[Math.floor(Math.random()*responses.length)], speakingOpts);
             }
             //alert("Boom");
-        });
+        });*/
+        menuDiv.css("opacity", "0");
+        menuDiv.show();
+        menuDiv.animate({opacity: 1}, {easing: "ease-in", duration: 2000, complete: function() {
+            if(!soundManager.getSoundById("Travel").muted) {
+                //speak("Please select your action.", {pitch: 150});
+                var responses = ["Please select your action.", "What will you do now?", "What course will you follow now?"];
+                speak("Welcome to "+window.curPlanet.name+". "+responses[Math.floor(Math.random()*responses.length)], speakingOpts);
+            }
+            //alert("Boom");
+        }});
         //menuDiv.slideDown(2000);
         $("body").addClass("menuUp");
         window.scrollTo(0,1);
@@ -619,7 +633,7 @@ window.onload = function() {
         stage.removeAllChildren();
         Ticker.setPaused(false);
         var dist = Math.sqrt(Math.pow(from.x-to.x, 2)+Math.pow(from.y-to.y, 2));
-        alert(dist);
+        //alert(dist);
         from.bit.x = canvas[0].width/2-from.img.width*from.bit.scaleX/2;
         from.bit.y = 0;
         from.bit.width = from.img.width*from.bit.scaleX;
@@ -646,14 +660,17 @@ window.onload = function() {
         if('ontouchstart' in window) {
             touchCons.show();
             touchCons.css("display", "inline-block");
-            alert(touchCons[0].style.display);
+            //alert(touchCons[0].style.display);
         } else {
             otherMenu.show();
         }
         canvas.show();
         canvas.attr("class", "space");
         $("body").attr("class", "space");
-        canvas.css("background-position", "0px 0px");
+        //canvas.css("background-position", "0px 0px");
+        canvas[0].style.backgroundPositionX = "0px";
+        canvas[0].style.backgroundPositionY = "0px";
+        console.log(canvas[0].style.backgroundPosition);
         //menuDiv.hide();
         //splash.hide();
         $("body").removeClass("menuUp");
@@ -667,11 +684,11 @@ window.onload = function() {
             //console.log("0px "+parseInt(canvas[0].style.backgroundPositionY, 10)+"px");
         //}, 1000/30);
         //console.log(canvas.width);
-        window.playerShip = window.playerShip||new PlayerShip(imgs.playerShip, canvas.width()/2-shipW/2, canvas.height()*0.75, shipW, shipW);
+        window.playerShip = window.playerShip||new PlayerShip(imgs.playerShip, canvas[0].width/2-shipW/2, canvas[0].height*0.75, shipW, shipW);
         //alert(canvas.width()/2-shipW/2);
-        fight([new EnemyShip(imgs.enemyShip, canvas.width()/2-shipW/2, canvas.height()*0.25-shipW, shipW, shipW)]);
+        fight([new EnemyShip(imgs.enemyShip, canvas[0].width/2-shipW/2, canvas[0].height*0.25-shipW, shipW, shipW)]);
         //window.open(replacementImg("Graphics/starshipdark_flipped.svg"));
-        Ticker.setFPS(60);
+        Ticker.setFPS(30);
         Ticker.addListener(window);
     }
     function splashScreen(callback) {
@@ -683,9 +700,15 @@ window.onload = function() {
             splash.fadeOut(500, callback);
         };
         s.play();*/
-        splash.fadeIn(3000, "linear", function() {
+        /*splash.fadeIn(3000, "linear", function() {
             splash.fadeOut(500, "linear", callback);
-        });
+        });*/
+        //splash.css("display", "block");
+        splash.show();
+        splash.css("opacity", "0");
+        splash.animate({opacity: 1}, {duration: 3000, complete: function() {
+            splash.animate({opacity: 0}, {duration: 500, complete: callback});
+        }});
         window.scrollTo(0, 1);
     }
     
@@ -697,7 +720,7 @@ window.onload = function() {
             mapScreen();
         });
         var fsString = "Do you want to go fullscreen? This is recommended.";
-        /*if(document.body.webkitRequestFullScreen) {
+        if(document.body.webkitRequestFullScreen) {
             //alert("Durr");
             if(confirm(fsString)) {
                 document.documentElement.webkitRequestFullScreen(Element.ALLOW_KEYBOARD_INPUT);
@@ -708,13 +731,13 @@ window.onload = function() {
             }
         } else {
             alert("It is recommended that you go fullscreen. In most browsers, hit F11.");
-        }*/
+        }
         
         soundManager.url="Scripts/SoundManager2/swf/soundmanager2.swf";
         soundManager.defaultOptions.autoLoad = true;
         soundManager.defaultOptions.autoPlay = false;
         soundManager.onready(function() {
-            console.log("SoundManager ready");
+            //console.log("SoundManager ready");
             soundManager.createSound({
                 id: 'Travel',
                 //url: './Sound/Music/Road Trip.mp3',
@@ -761,25 +784,6 @@ window.onload = function() {
                 url: "./Sound/Music/copycat_levelup.wav",
                 autoLoad: true
             });*/
-            $("#audioToggle").click(function() {
-                //soundManager.toggleMute();
-                if(soundManager.getSoundById("Travel").muted) {
-                    soundManager.unmute();
-                    $("#audioToggle img").attr("src", imgs.speaker);
-                } else {
-                    soundManager.mute();
-                    $("#audioToggle img").attr("src", imgs.muted);
-                }
-            });
-            $("#pauseToggle").click(function() {
-                var p = Ticker.getPaused();
-                Ticker.setPaused(!p);
-                if(p) {
-                    $("#pauseToggle img").attr("src", imgs.pause);
-                } else {
-                    $("#pauseToggle img").attr("src", imgs.play);
-                }
-            });
             //soundManager.play('Battle');
             splashScreen(menuScreen);
         });
@@ -794,6 +798,25 @@ window.onload = function() {
             };
             splashScreen(menuScreen);
         });
+        $("#audioToggle").click(function() {
+            //soundManager.toggleMute();
+            if(soundManager.getSoundById("Travel").muted) {
+                soundManager.unmute();
+                $("#audioToggle img").attr("src", imgs.speaker);
+            } else {
+                soundManager.mute();
+                $("#audioToggle img").attr("src", imgs.muted);
+            }
+        });
+            $("#pauseToggle").click(function() {
+                var p = Ticker.getPaused();
+                Ticker.setPaused(!p);
+                if(p) {
+                    $("#pauseToggle img").attr("src", imgs.pause);
+                } else {
+                    $("#pauseToggle img").attr("src", imgs.play);
+                }
+            });
         //splashScreen(menuScreen);
         //menuScreen();
         //travelTo(5000);
@@ -803,7 +826,7 @@ window.onload = function() {
         console.log(imgs, imgs.stars);
         canvas.css("background-image", "url("+imgs.stars+")");
     }*/
-    //soundManager.debugMode = false;
+    soundManager.debugMode = false;
     //soundManager.useHighPerformance = true;
     hideAll();
     init();
