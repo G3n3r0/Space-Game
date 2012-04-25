@@ -165,3 +165,6 @@ An odd mixture of many genres
 * Switched from jQuery to zepto.js
 * Converted all canvas.width()s to canvas[0].width
 * Switched SM2 out of debug
+
+###A[ril 24th, 2012
+* Updated EaselJS version

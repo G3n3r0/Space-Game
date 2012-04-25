@@ -1,9 +1,8 @@
 /*
-* Text by Grant Skinner. Dec 5, 2010
-* Visit http://easeljs.com/ for documentation, updates and examples.
+* Text
+* Visit http://createjs.com/ for documentation, updates and examples.
 *
-*
-* Copyright (c) 2010 Grant Skinner
+* Copyright (c) 2010 gskinner.com, inc.
 * 
 * Permission is hereby granted, free of charge, to any person
 * obtaining a copy of this software and associated documentation
@@ -26,13 +25,6 @@
 * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 * OTHER DEALINGS IN THE SOFTWARE.
 */
-
-/**
-* The Easel Javascript library provides a retained graphics mode for canvas 
-* including a full, hierarchical display list, a core interaction model, and 
-* helper classes to make working with Canvas much easier.
-* @module EaselJS
-**/
 
 (function(window) {
 	
@@ -306,8 +298,10 @@ var p = Text.prototype = new DisplayObject();
 	 * @protected 
 	 **/
 	p._drawTextLine = function(ctx, text, y) {
-		if (this.outline) { ctx.strokeText(text, 0, y, this.maxWidth); }
-		else { ctx.fillText(text, 0, y, this.maxWidth); }
+		// Chrome 17 will fail to draw the text if the last param is included but null, so we feed it a large value instead:
+			if (this.outline) { ctx.strokeText(text, 0, y, this.maxWidth)||0xFFFF; }
+			else { ctx.fillText(text, 0, y, this.maxWidth||0xFFFF); }
+		
 	}
 
 window.Text = Text;

@@ -1,10 +1,9 @@
 /*
-* Stage by Grant Skinner. Dec 5, 2010
-* Visit http://easeljs.com/ for documentation, updates and examples.
+* Stage
+* Visit http://createjs.com/ for documentation, updates and examples.
 *
-*
-* Copyright (c) 2010 Grant Skinner
-*
+* Copyright (c) 2010 gskinner.com, inc.
+* 
 * Permission is hereby granted, free of charge, to any person
 * obtaining a copy of this software and associated documentation
 * files (the "Software"), to deal in the Software without
@@ -13,10 +12,10 @@
 * copies of the Software, and to permit persons to whom the
 * Software is furnished to do so, subject to the following
 * conditions:
-*
+* 
 * The above copyright notice and this permission notice shall be
 * included in all copies or substantial portions of the Software.
-*
+* 
 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
 * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
 * OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
@@ -26,13 +25,6 @@
 * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 * OTHER DEALINGS IN THE SOFTWARE.
 */
-
-/**
-* The Easel Javascript library provides a retained graphics mode for canvas
-* including a full, hierarchical display list, a core interaction model, and
-* helper classes to make working with Canvas much easier.
-* @module EaselJS
-**/
 
 (function(window) {
 
@@ -214,14 +206,12 @@ var p = Stage.prototype = new Container();
 	 * and render its entire display list to the canvas.
 	 * @method update
 	 **/
-	p.update = function() {
+	p.update = function(data) {
 		if (!this.canvas) { return; }
 		if (this.autoClear) { this.clear(); }
 		Stage._snapToPixelEnabled = this.snapToPixelEnabled;
 		if (this.tickOnUpdate) {
-			if (this.tick == this.update) { var t=1; this.tick = null; }
-			this._tick(true);
-			if (t) { this.tick = this.update; }
+			this._tick(data);
 		}
 		this.draw(this.canvas.getContext("2d"), false, this.getConcatenatedMatrix(this._matrix));
 	}
@@ -304,17 +294,18 @@ var p = Stage.prototype = new Container();
 	/**
 	 * Enables or disables (by passing a frequency of 0) mouse over handlers (onMouseOver and onMouseOut) for this stage's display
 	 * list. These events can be expensive to generate, so they are disabled by default, and the frequency of the events
-	 * can be controlled independently of mouse move events via the frequency parameter.
+	 * can be controlled independently of mouse move events via the optional frequency parameter.
 	 * @method enableMouseOver
-	 * @param {Number} frequency The maximum number of times per second to broadcast mouse over/out events. Set to 0 to disable mouse
-	 * over events completely. Maximum is 50. A lower frequency is less responsive, but uses less CPU.
+	 * @param {Number} frequency Optional param specifying the maximum number of times per second to broadcast mouse over/out events. Set to 0 to disable mouse
+	 * over events completely. Maximum is 50. A lower frequency is less responsive, but uses less CPU. Default is 20.
 	 **/
 	p.enableMouseOver = function(frequency) {
 		if (this._mouseOverIntervalID) {
 			clearInterval(this._mouseOverIntervalID);
 			this._mouseOverIntervalID = null;
 		}
-		if (frequency <= 0) { return; }
+		if (frequency == null) { frequency = 20; }
+		else if (frequency <= 0) { return; }
 		var o = this;
 		this._mouseOverIntervalID = setInterval(function(){ o._testMouseOver(); }, 1000/Math.min(50,frequency));
 		this._mouseOverX = NaN;
