@@ -168,3 +168,7 @@ An odd mixture of many genres
 
 ###A[ril 24th, 2012
 * Updated EaselJS version
+
+###May 15th, 2012
+* Began ring system
+* Added ring switching keys

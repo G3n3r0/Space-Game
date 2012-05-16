@@ -12,6 +12,8 @@ window.onload = function() {
     var stage = new Stage(canvas[0]);
     var three = false;
     var speakingOpts = {pitch: 150};
+    var curRing = 1;
+    var maxRings = 9;
     
     var imgs = {
         playerShip: "Graphics/starship.svg",
@@ -219,8 +221,11 @@ window.onload = function() {
         this.bulletInt = 800;
         this.shootInt = 800;
         //this.shootInt = 500;
+        this.baseHealth = 50;
         this.health = 50;
-        this.maxHealth =50;
+        this.maxHealth = 50;
+        this.maxHealth += ((curRing-1)/(maxRings-1));
+        this.health += ((curRing-1)/(maxRings-1));
         
         this.img = new Image();
         var t = this;
@@ -391,7 +396,12 @@ window.onload = function() {
             l = false;
         } else if(e.which===32) {
             f = false;
+        } else if(e.which===90) {
+            switchRing(curRing+1);
+        } else if(e.which===88) {
+            switchRing(curRing-1);
         }
+        console.log(e.which);
     };
     canvas[0].ontouchstart = function() {
         Ticker.setPaused(!Ticker.getPaused());
@@ -480,6 +490,7 @@ window.onload = function() {
                 soundManager.play("Explosion");
                 stage.removeChild(enemies[j].bit);
                 enemies.removeIt(enemies[j]);
+                setTimeout(function() { fight([new EnemyShip(imgs.enemyShip, canvas[0].width/2-shipW/2, canvas[0].height*0.25-shipW, shipW, shipW)])}, 45000)
                 //unfight();
             }
         }
@@ -527,7 +538,7 @@ window.onload = function() {
         mapStage.removeAllChildren();
         hideAll();
         map.show();
-        speak("Select your destination.");
+        speak("Select your destination.", speakingOpts);
         var size = mapC[0].width/10;
         /*for(var y=0;y<100;y++) {
             for(var x=0;x<100;x++) {
@@ -627,9 +638,19 @@ window.onload = function() {
         soundManager.stopAll();
         soundManager.play('Travel');
     }
+    function switchRing(num) {
+        curRing = num;
+        for(var i=0;i<window.enemies.length;i++) {
+            window.enemies[i].maxHealth = window.enemies[i].baseHealth+((curRing-1)/(maxRings-1)*window.enemies[i].baseHealth);
+            window.enemies[i].health = window.enemies[i].maxHealth;
+            //this.maxHealth += ((curRing-1)/(maxRings-1));
+        }
+        document.title = "Ring "+curRing;
+    }
     
     function travelTo(from, to) {
         var sh = 128;
+        stage.mouseEnabled = false;
         stage.removeAllChildren();
         Ticker.setPaused(false);
         var dist = Math.sqrt(Math.pow(from.x-to.x, 2)+Math.pow(from.y-to.y, 2));
