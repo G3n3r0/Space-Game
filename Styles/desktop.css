@@ -2,7 +2,7 @@ body.menuUp {
     background-attachment: fixed;
     /*background-image: url(http://opengameart.org/sites/default/files/sun_softer.png);
     background-image: url(http://opengameart.org/sites/default/files/space.png);*/
-    background-image: url(../Graphics/space_bg.png);
+    background-image: url(../Graphics/space_bg.jpg);
     /*background-size: auto 100%;*/
     background-size: cover;
     background-repeat: no-repeat;
@@ -23,4 +23,13 @@ body.menuUp {
 }
 #otherMenu div:last-child {
     border-bottom-right-radius: 6px;
+}
+canvas.space {
+    margin: 0px;
+}
+body.space {
+    overflow: hidden;
+    margin: 0px;
+    border: none;
+    padding: 0px;
 }

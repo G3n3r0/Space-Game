@@ -166,9 +166,25 @@ An odd mixture of many genres
 * Converted all canvas.width()s to canvas[0].width
 * Switched SM2 out of debug
 
-###A[ril 24th, 2012
+###April 24th, 2012
 * Updated EaselJS version
 
 ###May 15th, 2012
 * Began ring system
 * Added ring switching keys
+
+###July 21st, 2012
+* Fixed key event problems
+* Tested in Chromium 20, FF 14 and Opera 12
+* TODO: Fix insecure(ie. external) content, fix fullscreen problems
+
+###July 22nd, 2012
+* Fixed bug where ship would disappear on second flight(Harder than I though =/)
+* Changed fullscreen interface so it works(Needs some more work, though)
+* TODO: Fix insecure(ie. external) content, make fullscreen UI better, make images work in Opera, parallex background, find some better planets
+
+###July 23rd, 2012
+* Steam sale over... Damn you, Newell!
+* Parallex, because #YOLO
+* Decided that Chrome's treatment of fullscreen is insane... I had to clear the cache to get it to work like normal
+* TODO: Fix insecure(ie. external) content, make fullscreen UI better, make images work in Opera, find some better planets, get some #Swaqqalicious music

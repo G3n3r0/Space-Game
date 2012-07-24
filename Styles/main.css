@@ -36,12 +36,14 @@ canvas.space {
     /*background-image: url(http://deadlyredcube.com/journal/starfield.jpg);*/
     //background-image: url(http://www.deviantart.com/download/131202690/Space_Backdrop_by_Frostlight.jpg);
     //background: url(http://zho.berka.com/tiles/starsandnebula250f.jpg);
-    background-image: url(../Graphics/space.svg);
+    background-image: url(../Graphics/space_clear.svg), url(../Graphics/space_clear.svg), url(../Graphics/space_clear.svg);
     /*background-color: white;*/
     /*-webkit-animation: scroll 5s infinite;
     -webkit-animation-timing-function: linear;*/
     margin-top: 5px;
     background-repeat: repeat;
+    margin: 0px;
+    background-color: black;
 }
 #menu {
     //font-family: SegoeWPRegular, mono;
@@ -110,14 +112,14 @@ canvas.space {
 #menu, #c, #splash, #otherMenu, #touchControls, #map {
     display: none;
 }
-#c {
+/*#c {
     -webkit-box-shadow: 0px 0px 10px 3px #000;
     -moz-box-shadow: 0px 0px 10px 3px #000;
     -o-box-shadow: 0px 0px 10px 3px #000;
     box-shadow: 0px 0px 10px 3px #000;
     position: relative;
     left: -30px;
-}
+}*/
 
 #menu img::selection {
     background: rgba(0,0,0,0);
@@ -245,3 +247,16 @@ body.space {
     height: 20%;
   }
 }*/
+
+#fsBar {
+    position: fixed;
+    background-color: rgba(0,0,255,0.3);
+    top: 0px;
+    left: 0px;
+    width: 100%;
+    padding: 10px;
+    color: white;
+}
+#textFS {
+    font-weight: bold;
+}
