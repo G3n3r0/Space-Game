@@ -485,7 +485,10 @@ window.onload = function() {
     window.tick = function() {
         //console.log("tick");
         //canvas[0].style.backgroundPositionY = parseInt(canvas[0].style.backgroundPositionY||0, 10)+bgInc+"px";
-        canvas[0].style.backgroundPosition = "0px "+(parseInt(canvas[0].style.backgroundPosition.split(" ")[1]||0, 10)+bgInc)+"px, 50px "+(parseInt(canvas[0].style.backgroundPosition.split(" ")[1]||0, 10)+bgInc)/2+"px, 1000px "+(parseInt(canvas[0].style.backgroundPosition.split(" ")[1]||0, 10)+bgInc)/4+"px";
+        var curBGPos = parseInt(canvas[0].style.backgroundPosition.split(" ")[1]||0, 10);
+        //canvas[0].style.backgroundPosition = "0px "+Math.round((parseInt(canvas[0].style.backgroundPosition.split(" ")[1]||0, 10)+bgInc)/1.1)+"px, 50px "+(parseInt(canvas[0].style.backgroundPosition.split(" ")[1]||0, 10)+bgInc)/2+"px, 1000px "+(parseInt(canvas[0].style.backgroundPosition.split(" ")[1]||0, 10)+bgInc)/4+"px";
+        canvas[0].style.backgroundPosition = "0px "+(curBGPos+bgInc/2)+"px, 50px "+(curBGPos+bgInc)/2+"px, 100px "+(curBGPos+bgInc)/4+"px";
+        //console.log((curBGPos+bgInc)/2);
         //console.log(parseInt(canvas[0].style.backgroundPosition.split(" ")[1]||0, 10)+bgInc)
         
         //console.log("0px "+(parseInt(canvas[0].style.backgroundPosition.split(" ")[1], 10)+20)+"px");
@@ -794,8 +797,8 @@ window.onload = function() {
         //splash.css("display", "block");
         splash.show();
         splash.css("opacity", "0");
-        splash.animate({opacity: 1}, {duration: 3000, complete: function() {
-            splash.animate({opacity: 0}, {duration: 500, complete: callback});
+        splash.animate({opacity: 1}, {duration: 1000, complete: function() {
+            splash.animate({opacity: 0}, {duration: 100, complete: callback});
         }});
         window.scrollTo(0, 1);
     }
@@ -871,8 +874,8 @@ window.onload = function() {
             //console.log("SoundManager ready");
             soundManager.createSound({
                 id: 'Travel',
-                //url: './Sound/Music/Road Trip.mp3',
-                url: "http://wrathgames.com/blog/wp-content/plugins/download-monitor/download.php?id=74",
+                url: './Sound/Music/Road Trip.mp3',
+                //url: "http://wrathgames.com/blog/wp-content/plugins/download-monitor/download.php?id=74",
                 volume: 50,
                 onfinish: function() {
                     //console.log(this);
@@ -880,12 +883,13 @@ window.onload = function() {
                 }
             });
             var battleVol = 75;
-            window.numBattleSongs = 2;
+            window.numBattleSongs = 3;
             soundManager.createSound({
                 id: "Battle1",
                 volume: battleVol,
                 //url: "./Sound/Music/Rusty Boss-man Tussle.mp3",
-                url: "http://wrathgames.com/blog/resources/music/35/run_128.mp3",
+                //url: "http://wrathgames.com/blog/resources/music/35/run_128.mp3",
+                url: "./Sound/Music/run_128.mp3",
                 onfinish: function() {
                     //console.log(this);
                     this.play()
@@ -895,7 +899,17 @@ window.onload = function() {
                 id: "Battle2",
                 volume: battleVol,
                 //url: "./Sound/Music/Rusty Boss-man Tussle.mp3",
-                url: "http://wrathgames.com/blog/resources/music/26/dragon_king_128.mp3",
+                //url: "http://wrathgames.com/blog/resources/music/26/dragon_king_128.mp3",
+                url: "./Sound/Music/dragon_king_128.mp3",
+                onfinish: function() {
+                    //console.log(this);
+                    this.play()
+                }
+            });
+            soundManager.createSound({
+                id: "Battle3",
+                volume: battleVol,
+                url: "./Sound/Music/Rusty Boss-man Tussle.mp3",
                 onfinish: function() {
                     //console.log(this);
                     this.play()

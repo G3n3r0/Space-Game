@@ -184,8 +184,13 @@ An odd mixture of many genres
 * TODO: Fix insecure(ie. external) content, make fullscreen UI better, make images work in Opera, parallex background, find some better planets
 
 ###July 23rd, 2012
-Change just to make commit work
 * Steam sale over... Damn you, Newell!
 * Parallex, because #YOLO
 * Decided that Chrome's treatment of fullscreen is insane... I had to clear the cache to get it to work like normal
 * TODO: Fix insecure(ie. external) content, make fullscreen UI better, make images work in Opera, find some better planets, get some #Swaqqalicious music
+
+###July 24th, 2012
+* Moved some external content to here
+* Fixed up parallex effect
+* Will add more music tomorrow
+* TODO: Fix remaining insecure(ie. external) content, make fullscreen UI better, make images work in Opera, find some better planets, add music
