@@ -195,3 +195,9 @@ An odd mixture of many genres
 * Fixed up parallex effect
 * Will add more music tomorrow
 * TODO: Fix remaining insecure(ie. external) content, make fullscreen UI better, make images work in Opera, find some better planets, add music
+
+###July 25th, 2012
+* Added LICENSE.md
+* Added a bunch of music
+* Discovered fix for problems with bullet sound: turns out, SM2 has issues with .wav files, so I had to use a .mp3. Will convert the explosion sound later.
+* Made travel music use random selection, just like the battle music
