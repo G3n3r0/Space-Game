@@ -287,7 +287,10 @@ window.onload = function() {
         }*/
         if(this.shootInt>=this.bulletInt) {
             enemyBullets.push(new Bullet(["red", "orange", "red"], this.x+this.width/2-4, this.y+this.height, "enemy"));
-            soundManager.play("Bullet");
+            var sound = soundManager.getSoundById("Bullet");
+            sound.setPosition(0);
+            sound.play();
+            //soundManager.play("Bullet");
             this.shootInt = 0;
         }
         this.bit.x = this.x;
@@ -377,8 +380,11 @@ window.onload = function() {
         //console.log(this.healthBar);
         
         if(f && this.shootInt>=this.bulletInt) {
-            soundManager.play("Bullet");
+            //soundManager.play("Bullet");
             playerBullets.push(new Bullet(["green", "lime", "green"], this.x+this.width/2-4, this.y-4, "friend"));
+            var sound = soundManager.getSoundById("Bullet");
+            sound.setPosition(0);
+            sound.play();
             this.shootInt = 0;
         }
         
@@ -649,7 +655,7 @@ window.onload = function() {
         menuDiv.css("opacity", "0");
         menuDiv.show();
         menuDiv.animate({opacity: 1}, {easing: "ease-in", duration: 2000, complete: function() {
-            if(!soundManager.getSoundById("Travel").muted) {
+            if(!soundManager.getSoundById("Travel1").muted) {
                 //speak("Please select your action.", {pitch: 150});
                 var responses = ["Please select your action.", "What will you do now?", "What course will you follow now?"];
                 speak("Welcome to "+window.curPlanet.name+". "+responses[Math.floor(Math.random()*responses.length)], speakingOpts);
@@ -682,7 +688,10 @@ window.onload = function() {
         document.body.ontouchstart = undefined;
         fighting = false;
         soundManager.stopAll();
-        soundManager.play('Travel');
+        var n = Math.floor(Math.random()*(window.numTravelSongs))+1;
+        console.log(n);
+        soundManager.play('Travel'+n);
+        //soundManager.play('Travel');
     }
     function switchRing(num) {
         if(num<=9) {
@@ -777,7 +786,8 @@ window.onload = function() {
         //stage.addChild(window.playerShip.bit);
         stage.update();
         //alert(canvas.width()/2-shipW/2);
-        fight([new EnemyShip(imgs.enemyShip, canvas[0].width/2-shipW/2, canvas[0].height*0.25-shipW, shipW, shipW)]);
+        unfight();
+        //fight([new EnemyShip(imgs.enemyShip, canvas[0].width/2-shipW/2, canvas[0].height*0.25-shipW, shipW, shipW)]);
         //window.open(replacementImg("Graphics/starshipdark_flipped.svg"));
         Ticker.setFPS(30);
         Ticker.addListener(window);
@@ -828,7 +838,7 @@ window.onload = function() {
         }*/
         if(document.body.webkitRequestFullScreen) {
             fsFunc = function() {
-                document.documentElement.webkitRequestFullScreen();
+                document.documentElement.webkitRequestFullScreen(Element.ALLOW_KEYBOARD_INPUT);
             };
         } else if(document.body.mozRequestFullScreen) {
             fsFunc = function() {
@@ -872,8 +882,9 @@ window.onload = function() {
         soundManager.defaultOptions.autoPlay = false;
         soundManager.onready(function() {
             //console.log("SoundManager ready");
+            window.numTravelSongs = 4;
             soundManager.createSound({
-                id: 'Travel',
+                id: 'Travel1',
                 url: './Sound/Music/Road Trip.mp3',
                 //url: "http://wrathgames.com/blog/wp-content/plugins/download-monitor/download.php?id=74",
                 volume: 50,
@@ -882,8 +893,34 @@ window.onload = function() {
                     this.play();
                 }
             });
+            soundManager.createSound({
+                id: 'Travel2',
+                url: './Sound/Music/Max Loginov - Spacetraveller.mp3',
+                //url: "http://wrathgames.com/blog/wp-content/plugins/download-monitor/download.php?id=74",
+                volume: 50,
+                onfinish: function() {
+                    //console.log(this);
+                    this.play();
+                }
+            });
+            soundManager.createSound({
+                id: 'Travel3',
+                url: './Sound/Music/Sergey Borovkov - Phaeton.mp3',
+                volume: 50,
+                onfinish: function() {
+                    this.play();
+                }
+            });
+            soundManager.createSound({
+                id: 'Travel4',
+                url: './Sound/Music/Nicolas Millet - Aelig.mp3',
+                volume: 50,
+                onfinish: function() {
+                    this.play();
+                }
+            });
             var battleVol = 75;
-            window.numBattleSongs = 3;
+            window.numBattleSongs = 4;
             soundManager.createSound({
                 id: "Battle1",
                 volume: battleVol,
@@ -915,10 +952,20 @@ window.onload = function() {
                     this.play()
                 }
             });
+            soundManager.createSound({
+                id: "Battle4",
+                volume: battleVol,
+                url: "./Sound/Music/Xcentric Noizz - Trinity.mp3",
+                onfinish: function() {
+                    this.play()
+                }
+            });
             
             soundManager.createSound({
                 id: 'Bullet',
-                url: './Sound/SFX/silencer.wav'
+                url: './Sound/SFX/silencer.mp3',
+                //url: './Sound/Music/copycat_levelup.wav',
+                multiShot: true
             });
             soundManager.createSound({
                 id: "Explosion",
@@ -945,7 +992,7 @@ window.onload = function() {
         });
         $("#audioToggle").click(function() {
             //soundManager.toggleMute();
-            if(soundManager.getSoundById("Travel").muted) {
+            if(soundManager.getSoundById("Travel1").muted) {
                 soundManager.unmute();
                 $("#audioToggle img").attr("src", imgs.speaker);
             } else {

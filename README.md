@@ -11,6 +11,7 @@ An odd mixture of many genres
 ###Music
 * [avgst](http://opengameart.org/users/avgvst)
 * [WrathGames Studio](http://wrathgames.com/blog/)
+* [copyc4t](http://www.freesound.org/people/copyc4t/)
 
 ###Sound Effects
 * [bart](http://opengameart.org/users/bart)
