@@ -26,7 +26,7 @@ window.onload = function() {
     var maxRings = 9;
     
     var imgs = {
-        playerShip: "Graphics/starship.svg",
+        playerShip: "Graphics/starship.png",
         enemyShip: "Graphics/starshipdark_flipped.svg",
         speaker: "Graphics/Icons/speaker.svg",
         muted: "Graphics/Icons/speaker_muted.svg",
