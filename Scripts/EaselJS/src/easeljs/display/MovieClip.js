@@ -26,7 +26,7 @@
 * OTHER DEALINGS IN THE SOFTWARE.
 */
 
-(function(window) {
+(function(ns) {
 
 /**
  * The MovieClip class associates a TweenJS Timeline with an EaselJS Container. It allows you to create objects which
@@ -46,7 +46,7 @@
 var MovieClip = function(mode, startPosition, loop, labels) {
   this.initialize(mode, startPosition, loop, labels);
 }
-var p = MovieClip.prototype = new Container();
+var p = MovieClip.prototype = new ns.Container();
 
 	/**
 	 * Read-only. The MovieClip will advance independently of its parent, even if its parent is paused.
@@ -119,6 +119,13 @@ var p = MovieClip.prototype = new Container();
 	 */
 	p.paused = false;
 	
+	/**
+	 * If true, actions in this MovieClip's tweens will be run when the playhead advances.
+	 * @property actionsEnabled
+	 * @type Boolean
+	 */
+	p.actionsEnabled = true;
+	
 // private properties:
 
 	/**
@@ -173,7 +180,7 @@ var p = MovieClip.prototype = new Container();
 		this.loop = loop;
 		props = {paused:true, position:startPosition, useTicks:true};
 		this.Container_initialize();
-		this.timeline = new Timeline(null, labels, props);
+		this.timeline = new ns.Timeline(null, labels, props);
 		this._managed = {};
 	}
 	
@@ -255,7 +262,7 @@ var p = MovieClip.prototype = new Container();
 	 * @method clone
 	 **/
 	p.clone = function() {
-		// TODO: add support for this?? Need to clone the Timeline & retarget tweens.
+		// TODO: add support for this?? Need to clone the Timeline & retarget tweens - pretty complex.
 		throw("MovieClip cannot be cloned.")
 	}
 	
@@ -322,9 +329,9 @@ var p = MovieClip.prototype = new Container();
 		// update timeline position, ignoring actions if this is a graphic.
 		if (synched) {
 			// TODO: this would be far more ideal if the _synchOffset was somehow provided by the parent, so that reparenting wouldn't cause problems and we can direct draw. Ditto for _off (though less important).
-			tl.setPosition(this.startPosition + (this.mode==MovieClip.SINGLE_FRAME?0:this._synchOffset), Tween.NONE);
+			tl.setPosition(this.startPosition + (this.mode==MovieClip.SINGLE_FRAME?0:this._synchOffset), ns.Tween.NONE);
 		} else {
-			tl.setPosition(this._prevPosition);
+			tl.setPosition(this._prevPosition, this.actionsEnabled ? null : ns.Tween.NONE);
 		}
 		
 		this._prevPosition = tl._prevPosition;
@@ -339,7 +346,7 @@ var p = MovieClip.prototype = new Container();
 			if (target == this) { continue; } // TODO: this assumes this is the actions tween. Valid?
 			var offset = tween._stepPosition;
 			
-			if (target instanceof DisplayObject) {
+			if (target instanceof ns.DisplayObject) {
 				// motion tween.
 				this._addManagedChild(target, offset);
 			} else {
@@ -348,7 +355,7 @@ var p = MovieClip.prototype = new Container();
 			}
 		}
 		
-		for (var i=kids.length-1; i>=0; i--) {
+		for (i=kids.length-1; i>=0; i--) {
 			var id = kids[i].id;
 			if (this._managed[id] == 1) {
 				this.removeChildAt(i);
@@ -389,10 +396,10 @@ var p = MovieClip.prototype = new Container();
 	}
 	
 
-window.MovieClip = MovieClip;
-}(window));
+ns.MovieClip = MovieClip;
 
-(function() {
+
+
 	/**
 	 * This plugin works with TweenJS to prevent the startPosition property from tweening.
 	 * @private
@@ -414,7 +421,7 @@ window.MovieClip = MovieClip;
 	 * @private
 	 **/
 	MovieClipPlugin.install = function() {
-		Tween.installPlugin(MovieClipPlugin, ["startPosition"]);
+		ns.Tween.installPlugin(MovieClipPlugin, ["startPosition"]);
 	}
 	
 	/**
@@ -422,7 +429,7 @@ window.MovieClip = MovieClip;
 	 * @private
 	 **/
 	MovieClipPlugin.init = function(tween, prop, value) {
-		if (prop == "startPosition" || !(tween._target instanceof MovieClip)) { return value; }
+		if (prop == "startPosition" || !(tween._target instanceof ns.MovieClip)) { return value; }
 	}
 	
 	/** 
@@ -430,9 +437,11 @@ window.MovieClip = MovieClip;
 	 * @private
 	 **/
 	MovieClipPlugin.tween = function(tween, prop, value, startValues, endValues, ratio, position, end) {
-		if (!(tween._target instanceof MovieClip)) { return value; }
+		if (!(tween._target instanceof nsMovieClip)) { return value; }
 		return (ratio == 1 ? endValues[prop] : startValues[prop]);
 	}
 
 	MovieClipPlugin.install();
-}());
+
+}(createjs||(createjs={})));
+var createjs;

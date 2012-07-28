@@ -1,9 +1,8 @@
 /*
-* Bitmap by Grant Skinner. Dec 5, 2010
-* Visit http://easeljs.com/ for documentation, updates and examples.
+* Bitmap
+* Visit http://createjs.com/ for documentation, updates and examples.
 *
-*
-* Copyright (c) 2010 Grant Skinner
+* Copyright (c) 2010 gskinner.com, inc.
 * 
 * Permission is hereby granted, free of charge, to any person
 * obtaining a copy of this software and associated documentation
@@ -26,13 +25,6 @@
 * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 * OTHER DEALINGS IN THE SOFTWARE.
 */
-
-/**
-* The Easel Javascript library provides a retained graphics mode for canvas 
-* including a full, hierarchical display list, a core interaction model, and 
-* helper classes to make working with Canvas much easier.
-* @module EaselJS
-**/
 
 (function(window) {
 
@@ -63,6 +55,14 @@ var p = Bitmap.prototype = new DisplayObject();
 	 * @default true
 	 **/
 	p.snapToPixel = true;
+
+	/**
+	 * Specifies an area of the source image to draw. If omitted, the whole image will be drawn.
+	 * @property sourceRect
+	 * @type Rectangle
+	 * @default null
+	 */
+	p.sourceRect = null;
 	
 	// constructor:
 
@@ -120,7 +120,12 @@ var p = Bitmap.prototype = new DisplayObject();
 	 **/
 	p.draw = function(ctx, ignoreCache) {
 		if (this.DisplayObject_draw(ctx, ignoreCache)) { return true; }
-		ctx.drawImage(this.image, 0, 0);
+		var rect = this.sourceRect;
+		if (rect) {
+			ctx.drawImage(this.image, rect.x, rect.y, rect.width, rect.height, 0, 0, rect.width, rect.height);
+		} else {
+			ctx.drawImage(this.image, 0, 0);
+		}
 		return true;
 	}
 	

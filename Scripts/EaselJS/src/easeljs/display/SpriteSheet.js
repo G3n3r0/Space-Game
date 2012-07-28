@@ -26,7 +26,7 @@
 * OTHER DEALINGS IN THE SOFTWARE.
 */
 
-(function(window) {
+(function(ns) {
 /**
  * Encapsulates the properties and methods associated with a sprite sheet. A sprite sheet is a series of images (usually animation frames) combined
  * into a larger image (or images). For example, an animation consisting of 8 100x100 images could be combined into a 400x200
@@ -55,7 +55,7 @@
 &#9;// OR, the complex way that defines individual rects for frames.
 &#9;// The 5th value is the image index per the list defined in "images" (defaults to 0).
 &#9;frames: [
-&#9;	// x, y, width, height, image index, regX, regY
+&#9;	// x, y, width, height, imageIndex, regX, regY
 &#9;	[0,0,64,64,0,32,64],
 &#9;	[64,0,96,64,0]
 &#9;],
@@ -213,7 +213,7 @@ var p = SpriteSheet.prototype;
 			a = this._images = [];
 			for (i=0; i<l; i++) {
 				var img = data.images[i];
-				if (!(img instanceof Image)) {
+				if (typeof img == "string") {
 					var src = img;
 					img = new Image();
 					img.src = src;
@@ -234,7 +234,7 @@ var p = SpriteSheet.prototype;
 			a = data.frames;
 			for (i=0,l=a.length;i<l;i++) {
 				var arr = a[i];
-				this._frames.push({image:this._images[arr[4]?arr[4]:0], rect:new Rectangle(arr[0],arr[1],arr[2],arr[3]), regX:arr[5]||0, regY:arr[6]||0 });
+				this._frames.push({image:this._images[arr[4]?arr[4]:0], rect:new ns.Rectangle(arr[0],arr[1],arr[2],arr[3]), regX:arr[5]||0, regY:arr[6]||0 });
 			}
 		} else {
 			o = data.frames;
@@ -266,7 +266,8 @@ var p = SpriteSheet.prototype;
 				} else { // complex
 					anim.frequency = obj.frequency;
 					anim.next = obj.next;
-					a = anim.frames = obj.frames.slice(0);
+					var frames = obj.frames;
+					a = anim.frames = !isNaN(frames) ? [frames] : frames.slice(0);
 				}
 				anim.next = (a.length < 2 || anim.next == false) ? null : (anim.next == null || anim.next == true) ? name : anim.next;
 				if (!anim.frequency) { anim.frequency = 1; }
@@ -309,7 +310,8 @@ var p = SpriteSheet.prototype;
 	 * property indicating the advance frequency for this animation, a name property, 
 	 * and a next property, which specifies the default next animation. If the animation
 	 * loops, the name and next property will be the same.
-	 * @method getAnimations
+	 * @method getAnimation
+	 * @param name The name of the animation to get.
 	 * @return {Object} a generic object with frames, frequency, name, and next properties.
 	 **/
 	p.getAnimation = function(name) {
@@ -318,7 +320,7 @@ var p = SpriteSheet.prototype;
 	
 	/**
 	 * Returns an object specifying the image and source rect of the specified frame. The returned object
-	 * has an image property holding a reference to the image object in which the frame frame is found,
+	 * has an image property holding a reference to the image object in which the frame is found,
 	 * and a rect property containing a Rectangle instance which defines the boundaries for the
 	 * frame within that image.
 	 * @method getFrame
@@ -388,12 +390,13 @@ var p = SpriteSheet.prototype;
 			var rows = (img.height+1)/fh|0;
 			var ttl = this._numFrames>0 ? Math.min(this._numFrames-ttlFrames,cols*rows) : cols*rows;
 			for (var j=0;j<ttl;j++) {
-				this._frames.push({image:img, rect:new Rectangle(j%cols*fw,(j/cols|0)*fh,fw,fh), regX:this._regX, regY:this._regY });
+				this._frames.push({image:img, rect:new ns.Rectangle(j%cols*fw,(j/cols|0)*fh,fw,fh), regX:this._regX, regY:this._regY });
 			}
 			ttlFrames += ttl;
 		}
 		this._numFrames = ttlFrames;
 	}
 
-window.SpriteSheet = SpriteSheet;
-}(window));
+ns.SpriteSheet = SpriteSheet;
+}(createjs||(createjs={})));
+var createjs;

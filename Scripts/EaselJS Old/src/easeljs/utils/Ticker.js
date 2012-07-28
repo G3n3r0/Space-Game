@@ -1,9 +1,8 @@
 /*
-* Ticker by Grant Skinner. Dec 5, 2010
-* Visit http://easeljs.com/ for documentation, updates and examples.
+* Ticker
+* Visit http://createjs.com/ for documentation, updates and examples.
 *
-*
-* Copyright (c) 2010 Grant Skinner
+* Copyright (c) 2010 gskinner.com, inc.
 * 
 * Permission is hereby granted, free of charge, to any person
 * obtaining a copy of this software and associated documentation
@@ -26,14 +25,6 @@
 * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 * OTHER DEALINGS IN THE SOFTWARE.
 */
-
-/**
-* The Easel Javascript library provides a retained graphics mode for canvas 
-* including a full, hierarchical display list, a core interaction model, and 
-* helper classes to make working with Canvas much easier.
-* @module EaselJS
-**/
-
 
 (function(window) {
 
@@ -60,6 +51,14 @@ var Ticker = function() {
 	 * @type Boolean
 	 **/
 	Ticker.useRAF = null;
+	
+	/**
+	 * Specifies the animation target to use with requestAnimationFrame if useRAF is true.
+	 * @property animationTarget
+	 * @static
+	 * @type Object
+	 **/
+	Ticker.animationTarget = null;
 	
 	/**
 	 * Event broadcast  once each tick / interval. The interval is specified via the 
@@ -174,18 +173,19 @@ var Ticker = function() {
 	
 // public static methods:
 	/**
-	 * Adds a listener for the tick event. The listener object must expose a .tick() method, 
-	 * which will be called once each tick / interval. The interval is specified via the 
+	 * Adds a listener for the tick event. The listener must be either an object exposing a .tick() method,
+	 * or a function. The listener will be called once each tick / interval. The interval is specified via the 
 	 * .setInterval(ms) method.
-	 * The exposed tick method is passed two parameters: the elapsed time between the 
+	 * The tick method or function is passed two parameters: the elapsed time between the 
 	 * previous tick and the current one, and a boolean indicating whether Ticker is paused.
 	 * @method addListener
 	 * @static
-	 * @param {Object} o The object to add as a listener.
+	 * @param {Object} o The object or function to add as a listener.
 	 * @param {Boolean} pauseable If false, the listener will continue to have tick called 
 	 * even when Ticker is paused via Ticker.pause(). Default is true.
 	 **/
 	Ticker.addListener = function(o, pauseable) {
+		if (o == null) { return; }
 		if (!Ticker._inited) { Ticker.init(); }
 		Ticker.removeListener(o);
 		Ticker._pauseable[Ticker._listeners.length] = (pauseable == null) ? true : pauseable;
@@ -204,7 +204,7 @@ var Ticker = function() {
 		Ticker._tickTimes = [];
 		Ticker._pauseable = [];
 		Ticker._listeners = [];
-		Ticker._times.push(Ticker._startTime = Ticker._getTime());
+		Ticker._times.push(Ticker._lastTime = Ticker._startTime = Ticker._getTime());
 		Ticker.setInterval(Ticker._interval);
 	}
 	
@@ -212,7 +212,7 @@ var Ticker = function() {
 	 * Removes the specified listener.
 	 * @method removeListener
 	 * @static
-	 * @param {Object} o The object to remove from listening from the tick event.
+	 * @param {Object} o The object or function to remove from listening from the tick event.
 	 **/
 	Ticker.removeListener = function(o) {
 		if (Ticker._listeners == null) { return; }
@@ -241,20 +241,9 @@ var Ticker = function() {
 	 * @param {Number} interval Time in milliseconds between ticks. Default value is 50.
 	 **/
 	Ticker.setInterval = function(interval) {
-		Ticker._lastTime = Ticker._getTime();
 		Ticker._interval = interval;
-		if (Ticker.timeoutID != null) { clearTimeout(Ticker.timeoutID); }
-		if (Ticker.useRAF) {
-			if (Ticker._rafActive) { return; }
-			Ticker._rafActive = true;
-			var f = window.requestAnimationFrame || window.webkitRequestAnimationFrame || window.mozRequestAnimationFrame ||
-					  window.oRequestAnimationFrame || window.msRequestAnimationFrame;
-			if (f) {
-				f(Ticker._handleAF);
-				return;
-			}
-		}
-		if (Ticker._inited) { Ticker.timeoutID = setTimeout(Ticker._handleTimeout, interval); }
+		if (!Ticker._inited) { return; }
+		Ticker._setupTick();
 	}
 	
 	/**
@@ -294,15 +283,15 @@ var Ticker = function() {
 	 * @method getMeasuredFPS
 	 * @static
 	 * @param {Number} ticks Optional. The number of previous ticks over which to measure the actual 
-	 * frames / ticks per second.
+	 * frames / ticks per second. Defaults to the number of ticks per second.
 	 * @return {Number} The actual frames / ticks per second. Depending on performance, this may differ
 	 * from the target frames per second.
 	 **/
 	Ticker.getMeasuredFPS = function(ticks) {
 		if (Ticker._times.length < 2) { return -1; }
 		
-		// by default, calculate fps for the past 1/2 second:
-		if (ticks == null) { ticks = Ticker.getFPS()>>1; }
+		// by default, calculate fps for the past 1 second:
+		if (ticks == null) { ticks = Ticker.getFPS()|0; }
 		ticks = Math.min(Ticker._times.length-1, ticks);
 		return 1000/((Ticker._times[0]-Ticker._times[ticks])/ticks);
 	}
@@ -362,15 +351,10 @@ var Ticker = function() {
 	 * @protected
 	 **/
 	Ticker._handleAF = function(timeStamp) {
+		Ticker._rafActive = false;
+		Ticker._setupTick();
 		if (timeStamp - Ticker._lastTime >= Ticker._interval-1) {
 			Ticker._tick();
-		}
-		if (Ticker.useRAF) {
-			var f = window.requestAnimationFrame || window.webkitRequestAnimationFrame || window.mozRequestAnimationFrame ||
-						  window.oRequestAnimationFrame || window.msRequestAnimationFrame;
-			f(Ticker._handleAF, Ticker.animationTarget);
-		} else {
-			Ticker._rafActive = false;
 		}
 	}
 	
@@ -379,8 +363,26 @@ var Ticker = function() {
 	 * @protected
 	 **/
 	Ticker._handleTimeout = function() {
+		Ticker.timeoutID = null;
+		Ticker._setupTick();
 		Ticker._tick();
-		if (!Ticker.useRAF) { Ticker.timeoutID = setTimeout(Ticker._handleTimeout, Ticker._interval); }
+	}
+	
+	/**
+	 * @method _setupTick
+	 * @protected
+	 **/
+	Ticker._setupTick = function() {
+		if (Ticker._rafActive || Ticker.timeoutID != null) { return; } // avoid duplicates
+		if (Ticker.useRAF) {
+			var f = window.requestAnimationFrame || window.webkitRequestAnimationFrame || window.mozRequestAnimationFrame || window.oRequestAnimationFrame || window.msRequestAnimationFrame;
+			if (f) {
+				f(Ticker._handleAF, Ticker.animationTarget);
+				Ticker._rafActive = true;
+				return;
+			}
+		}
+		Ticker.timeoutID = setTimeout(Ticker._handleTimeout, Ticker._interval);
 	}
 	
 	/**
@@ -404,10 +406,10 @@ var Ticker = function() {
 		var listeners = Ticker._listeners.slice();
 		var l = listeners ? listeners.length : 0;
 		for (var i=0; i<l; i++) {
-			var p = pauseable[i];
 			var listener = listeners[i];
-			if (listener == null || (paused && p) || listener.tick == null) { continue; }
-			listener.tick(elapsedTime,paused);
+			if (listener == null || (paused && pauseable[i])) { continue; }
+			if (listener.tick) { listener.tick(elapsedTime, paused); }
+			else if (listener instanceof Function) { listener(elapsedTime, paused); }
 		}
 		
 		Ticker._tickTimes.unshift(Ticker._getTime()-time);

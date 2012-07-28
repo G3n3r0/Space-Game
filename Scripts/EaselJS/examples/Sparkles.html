@@ -32,12 +32,12 @@ var fpsLabel;
 function init() {
 	// create a new stage and point it at our canvas:
 	canvas = document.getElementById("testCanvas");
-	stage = new Stage(canvas);
+	stage = new createjs.Stage(canvas);
 	
 	// attach mouse handlers directly to the source canvas.
 	// better than calling from canvas tag for cross browser compatibility:
-	canvas.onmousemove = moveCanvas;
-	canvas.onclick = clickCanvas;
+	stage.onMouseMove = moveCanvas;
+	stage.onMouseDown = clickCanvas;
 
 	// define simple sprite sheet data specifying the image(s) to use, the size of the frames,
 	// and the registration point of the frame
@@ -48,17 +48,17 @@ function init() {
 	}
 	
 	// set up an animation instance, which we will clone
-	bmpAnim = new BitmapAnimation(new SpriteSheet(data));
+	bmpAnim = new createjs.BitmapAnimation(new createjs.SpriteSheet(data));
 
 	// add a text object to output the current FPS:
-	fpsLabel = new Text("-- fps","bold 14px Arial","#FFF");
+	fpsLabel = new createjs.Text("-- fps","bold 14px Arial","#FFF");
 	stage.addChild(fpsLabel);
 	fpsLabel.x = 10;
 	fpsLabel.y = 20;
 
 	// start the tick and point it at the window so we can do some work before updating the stage:
-	Ticker.setFPS(20);
-	Ticker.addListener(window);
+	createjs.Ticker.setFPS(20);
+	createjs.Ticker.addListener(window);
 }
 
 
@@ -84,19 +84,19 @@ function tick() {
 		}
 	}
 
-	fpsLabel.text = Math.round(Ticker.getMeasuredFPS())+" fps";
+	fpsLabel.text = Math.round(createjs.Ticker.getMeasuredFPS())+" fps";
 
 	// draw the updates to stage
 	stage.update();
 }
 
 //sparkle explosion
-function clickCanvas(e) {
+function clickCanvas(evt) {
 	addSparkles(Math.random()*200+100|0, stage.mouseX, stage.mouseY,2);
 }
 
 //sparkle trail
-function moveCanvas(e) {
+function moveCanvas(evt) {
 	addSparkles(Math.random()*2+1|0, stage.mouseX, stage.mouseY,1);
 }
 

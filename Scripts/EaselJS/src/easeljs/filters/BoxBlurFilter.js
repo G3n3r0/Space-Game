@@ -26,7 +26,7 @@
 * OTHER DEALINGS IN THE SOFTWARE.
 */
 
-(function(window) {
+(function(ns) {
 
 /**
 * BoxBlurFilter applies a box blur to DisplayObjects
@@ -40,7 +40,7 @@
 var BoxBlurFilter = function( blurX, blurY, quality ) {
   this.initialize( blurX, blurY, quality );
 }
-var p = BoxBlurFilter.prototype = new Filter();
+var p = BoxBlurFilter.prototype = new ns.Filter();
 
 // constructor:
 	/** @ignore */
@@ -87,7 +87,7 @@ var p = BoxBlurFilter.prototype = new Filter();
 	 **/
 	p.getBounds = function() {
 		// TODO: this doesn't properly account for blur quality.
-		return new Rectangle(-this.blurX,-this.blurY,2*this.blurX,2*this.blurY);
+		return new ns.Rectangle(-this.blurX,-this.blurY,2*this.blurX,2*this.blurY);
 	}
 
 	/**
@@ -235,7 +235,7 @@ var p = BoxBlurFilter.prototype = new Filter();
 	}
 
 	/**
-	 * Returns a clone of this DisplayObject. Some properties that are specific to this instance's current context are reverted to their defaults (for example .parent).
+	 * Returns a clone of this object.
 	 **/
 	p.clone = function() {
 		return new BoxBlurFilter(this.blurX, this.blurY, this.quality);
@@ -245,12 +245,13 @@ var p = BoxBlurFilter.prototype = new Filter();
 	 * Returns a string representation of this object.
 	 **/
 	p.toString = function() {
-		return "[BoxBlurFilter (name="+  this.name +")]";
+		return "[BoxBlurFilter]";
 	}
 
 // private methods:
 
 
 
-window.BoxBlurFilter = BoxBlurFilter;
-}(window));
+ns.BoxBlurFilter = BoxBlurFilter;
+}(createjs||(createjs={})));
+var createjs;

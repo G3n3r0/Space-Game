@@ -33,7 +33,7 @@
 * @module EaselJS
 **/
 
-(function(window) {
+(function(ns) {
 
 /**
 * DisplayObject is an abstract class that should not be constructed directly. Instead construct subclasses such as
@@ -241,9 +241,13 @@ var p = DisplayObject.prototype;
 
 	/**
 	 * Indicates whether the display object should have it's x & y position rounded prior to drawing it to stage.
-	 * This only applies if the enclosing stage has snapPixelsEnabled set to true, and the display object's composite
-	 * transform does not include any scaling, rotation, or skewing. The snapToPixel property is true by default for
-	 * Bitmap and BitmapAnimation instances, and false for all other display objects.
+	 * Snapping to whole pixels can result in a sharper and faster draw for images (ex. Bitmap & cached objects).
+	 * This only applies if the enclosing stage has snapPixelsEnabled set to true. The snapToPixel property is true
+	 * by default for Bitmap and BitmapAnimation instances, and false for all other display objects.
+	 * <br/><br/>
+	 * Note that this applies only rounds the display object's local position. You should
+	 * ensure that all of the display object's ancestors (parent containers) are also on a whole pixel. You can do this
+	 * by setting the ancestors' snapToPixel property to true.
 	 * @property snapToPixel
 	 * @type Boolean
 	 * @default false
@@ -318,6 +322,26 @@ var p = DisplayObject.prototype;
 	* @default 0
 	*/
 	p.cacheID = 0;
+	
+	/**
+	 * A Shape instance that defines a vector mask (clipping path) for this display object.  The shape's transformation
+	 * will be applied relative to the display object's parent coordinates (as if it were a child of the parent).
+	 * @property mask
+	 * @type Shape
+	 * @default null
+	 */
+	p.mask = null;
+	
+	/**
+	 * A display object that will be tested when checking mouse interactions or testing getObjectsUnderPoint. The hit area
+	 * will have its transformation applied relative to this display object's coordinate space (as though the hit test object were a child of this
+	 * display object and relative to its regX/Y). It is NOT used for hitTest().
+	 * @property hitArea
+	 * @type DisplayObject
+	 * @default null
+	 */
+	p.hitArea = null;
+	
 
 // private properties:
 
@@ -360,6 +384,7 @@ var p = DisplayObject.prototype;
 	 * @default null
 	 **/
 	p._matrix = null;
+	
 
 // constructor:
 	// separated so it can be easily addressed in subclasses:
@@ -370,8 +395,8 @@ var p = DisplayObject.prototype;
 	 * @protected
 	*/
 	p.initialize = function() {
-		this.id = UID.get();
-		this._matrix = new Matrix2D();
+		this.id = ns.UID.get();
+		this._matrix = new ns.Matrix2D();
 	}
 
 // public methods:
@@ -400,6 +425,34 @@ var p = DisplayObject.prototype;
 		if (ignoreCache || !this.cacheCanvas) { return false; }
 		ctx.drawImage(this.cacheCanvas, this._cacheOffsetX, this._cacheOffsetY);
 		return true;
+	}
+	
+	/**
+	 * Applies this display object's transformation, alpha, globalCompositeOperation, clipping path (mask), and shadow to the specified
+	 * context. This is typically called prior to draw.
+	 * @method setupContext
+	 * @param {CanvasRenderingContext2D} ctx The canvas 2D to update.
+	 **/
+	p.updateContext = function(ctx) {
+		var mtx, mask=this.mask, o=this;
+		
+		if (mask && mask.graphics) {
+			mtx = mask.getMatrix(mask._matrix);
+			ctx.transform(mtx.a,  mtx.b, mtx.c, mtx.d, mtx.tx, mtx.ty);
+			
+			mask.graphics.drawAsPath(ctx);
+			ctx.clip();
+			
+			mtx.invert();
+			ctx.transform(mtx.a,  mtx.b, mtx.c, mtx.d, mtx.tx, mtx.ty);
+		}
+		
+		mtx = o._matrix.identity().appendTransform(o.x, o.y, o.scaleX, o.scaleY, o.rotation, o.skewX, o.skewY, o.regX, o.regY);
+		if (ns.Stage._snapToPixelEnabled && o.snapToPixel) { ctx.transform(mtx.a,  mtx.b, mtx.c, mtx.d, mtx.tx+0.5|0, mtx.ty+0.5|0); }
+		else { ctx.transform(mtx.a,  mtx.b, mtx.c, mtx.d, mtx.tx, mtx.ty); }
+		ctx.globalAlpha *= o.alpha;
+		if (o.compositeOperation) { ctx.globalCompositeOperation = o.compositeOperation; }
+		if (o.shadow) { this._applyShadow(ctx, o.shadow); }
 	}
 
 	/**
@@ -487,7 +540,7 @@ var p = DisplayObject.prototype;
 		while (o.parent) {
 			o = o.parent;
 		}
-		if (o instanceof Stage) { return o; }
+		if (o instanceof ns.Stage) { return o; }
 		return null;
 	}
 
@@ -506,7 +559,7 @@ var p = DisplayObject.prototype;
 		var mtx = this.getConcatenatedMatrix(this._matrix);
 		if (mtx == null) { return null; }
 		mtx.append(1, 0, 0, 1, x, y);
-		return new Point(mtx.tx, mtx.ty);
+		return new ns.Point(mtx.tx, mtx.ty);
 	}
 
 	/**
@@ -525,7 +578,7 @@ var p = DisplayObject.prototype;
 		if (mtx == null) { return null; }
 		mtx.invert();
 		mtx.append(1, 0, 0, 1, x, y);
-		return new Point(mtx.tx, mtx.ty);
+		return new ns.Point(mtx.tx, mtx.ty);
 	}
 
 	/**
@@ -570,7 +623,19 @@ var p = DisplayObject.prototype;
 		this.regX = regX || 0;
 		this.regY = regY || 0;
 	}
-
+	
+	/**
+	 * Returns a matrix based on this object's transform.
+	 * @method getMatrix
+	 * @param {Matrix2D} matrix Optional. A Matrix2D object to populate with the calculated values. If null, a new
+	 * Matrix object is returned.
+	 * @return {Matrix2D} A matrix representing this display object's transform.
+	 **/
+	p.getMatrix = function(matrix) {
+		var o = this;
+		return (matrix ? matrix.identity() : new ns.Matrix2D()).appendTransform(o.x, o.y, o.scaleX, o.scaleY, o.rotation, o.skewX, o.skewY, o.regX, o.regY).appendProperties(o.alpha, o.shadow, o.compositeOperation);
+	}
+	
 	/**
 	 * Generates a concatenated Matrix2D object representing the combined transform of
 	 * the display object and all of its parent Containers up to the highest level ancestor
@@ -582,17 +647,15 @@ var p = DisplayObject.prototype;
 	 * @return {Matrix2D} a concatenated Matrix2D object representing the combined transform of
 	 * the display object and all of its parent Containers up to the highest level ancestor (usually the stage).
 	 **/
-	p.getConcatenatedMatrix = function(mtx) {
-		if (mtx) { mtx.identity(); }
-		else { mtx = new Matrix2D(); }
-		var target = this;
-		while (target != null) {
-			mtx.prependTransform(target.x, target.y, target.scaleX, target.scaleY, target.rotation, target.skewX,
-									target.skewY, target.regX, target.regY);
-			mtx.prependProperties(target.alpha, target.shadow, target.compositeOperation);
-			target = target.parent;
+	p.getConcatenatedMatrix = function(matrix) {
+		if (matrix) { matrix.identity(); }
+		else { matrix = new ns.Matrix2D(); }
+		var o = this;
+		while (o != null) {
+			matrix.prependTransform(o.x, o.y, o.scaleX, o.scaleY, o.rotation, o.skewX, o.skewY, o.regX, o.regY).prependProperties(o.alpha, o.shadow, o.compositeOperation);
+			o = o.parent;
 		}
-		return mtx;
+		return matrix;
 	}
 
 	/**
@@ -672,12 +735,12 @@ var p = DisplayObject.prototype;
 	}
 
 	/**
-	 * @method applyShadow
+	 * @method _applyShadow
 	 * @protected
 	 * @param {CanvasRenderingContext2D} ctx
 	 * @param {Shadow} shadow
 	 **/
-	p.applyShadow = function(ctx, shadow) {
+	p._applyShadow = function(ctx, shadow) {
 		shadow = shadow || Shadow.identity;
 		ctx.shadowColor = shadow.color;
 		ctx.shadowOffsetX = shadow.offsetX;
@@ -705,8 +768,7 @@ var p = DisplayObject.prototype;
 			var hit = ctx.getImageData(0, 0, 1, 1).data[3] > 1;
 		} catch (e) {
 			if (!DisplayObject.suppressCrossDomainErrors) {
-				throw "An error has occured. This is most likely due to security restrictions on reading canvas pixel " +
-				"data with local or cross-domain images.";
+				throw "An error has occurred. This is most likely due to security restrictions on reading canvas pixel data with local or cross-domain images.";
 			}
 		}
 		return hit;
@@ -726,6 +788,8 @@ var p = DisplayObject.prototype;
 			this.filters[i].applyFilter(ctx, 0, 0, w, h);
 		}
 	}
+	 
 
-window.DisplayObject = DisplayObject;
-}(window));
+ns.DisplayObject = DisplayObject;
+}(createjs||(createjs={})));
+var createjs;

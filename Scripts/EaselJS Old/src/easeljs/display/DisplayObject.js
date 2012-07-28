@@ -1,10 +1,9 @@
 /*
-* DisplayObject by Grant Skinner. Dec 5, 2010
-* Visit http://easeljs.com/ for documentation, updates and examples.
+* DisplayObject
+* Visit http://createjs.com/ for documentation, updates and examples.
 *
-*
-* Copyright (c) 2010 Grant Skinner
-*
+* Copyright (c) 2010 gskinner.com, inc.
+* 
 * Permission is hereby granted, free of charge, to any person
 * obtaining a copy of this software and associated documentation
 * files (the "Software"), to deal in the Software without
@@ -13,10 +12,10 @@
 * copies of the Software, and to permit persons to whom the
 * Software is furnished to do so, subject to the following
 * conditions:
-*
+* 
 * The above copyright notice and this permission notice shall be
 * included in all copies or substantial portions of the Software.
-*
+* 
 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
 * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
 * OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
@@ -28,9 +27,9 @@
 */
 
 /**
-* The Easel Javascript library provides a retained graphics mode for canvas
+* The EaselJS Javascript library provides a retained graphics mode for canvas
 * including a full, hierarchical display list, a core interaction model, and
-* helper classes to make working with Canvas much easier.
+* helper classes to make working with 2D graphics in Canvas much easier.
 * @module EaselJS
 **/
 
@@ -75,6 +74,13 @@ var p = DisplayObject.prototype;
 	 **/
 	DisplayObject._hitTestContext = DisplayObject._hitTestCanvas.getContext("2d");
 
+	/**
+	 * @property _nextCacheID
+	 * @type Number
+	 * @static
+	 * @protected
+	 **/
+	DisplayObject._nextCacheID = 1;
 
 	/**
 	 * The alpha (transparency) for this display object. 0 is fully transparent, 1 is fully opaque.
@@ -289,11 +295,11 @@ var p = DisplayObject.prototype;
 	p.onMouseOut = null;
 
 	/**
-	 * The tick callback is called on each display object on stage whenever the stage updates.
+	 * The onTick callback is called on each display object on a stage whenever the stage updates.
 	 * This occurs immediately before the rendering (draw) pass.
-	 * @event tick
+	 * @event onTick
 	 **/
-	p.tick = null;
+	p.onTick = null;
 
 	/**
 	 * An array of Filter objects to apply to this display object. Filters are only applied / updated when cache() or
@@ -413,17 +419,18 @@ var p = DisplayObject.prototype;
 	 **/
 	p.cache = function(x, y, width, height) {
 		// draw to canvas.
-		if (this.cacheCanvas == null) { this.cacheCanvas = document.createElement("canvas"); }
-		var ctx = this.cacheCanvas.getContext("2d");
-		this.cacheCanvas.width = width;
-		this.cacheCanvas.height = height;
-		ctx.clearRect(0, 0, width+1, height+1); // because some browsers don't properly clear if the width/height remain the same.
+		var cacheCanvas = this.cacheCanvas;
+		if (cacheCanvas == null) { cacheCanvas = this.cacheCanvas = document.createElement("canvas"); }
+		var ctx = cacheCanvas.getContext("2d");
+		cacheCanvas.width = width;
+		cacheCanvas.height = height;
 		ctx.setTransform(1, 0, 0, 1, -x, -y);
+		ctx.clearRect(x, y, cacheCanvas.width, cacheCanvas.height); // some browsers don't clear correctly.
 		this.draw(ctx, true, this._matrix.reinitialize(1,0,0,1,-x,-y)); // containers require the matrix to work from
 		this._cacheOffsetX = x;
 		this._cacheOffsetY = y;
 		this._applyFilters();
-		this.cacheID++;
+		this.cacheID = DisplayObject._nextCacheID++;
 	}
 
 	/**
@@ -436,15 +443,17 @@ var p = DisplayObject.prototype;
 	 * whatwg spec on compositing</a>.
 	 **/
 	p.updateCache = function(compositeOperation) {
-		if (this.cacheCanvas == null) { throw "cache() must be called before updateCache()"; }
-		var ctx = this.cacheCanvas.getContext("2d");
-		ctx.setTransform(1, 0, 0, 1, -this._cacheOffsetX, -this._cacheOffsetY);
-		if (!compositeOperation) { ctx.clearRect(0, 0, this.cacheCanvas.width+1, this.cacheCanvas.height+1); }
-		else { ctx.globalCompositeOperation = compositeOperation; }
+		var cacheCanvas = this.cacheCanvas, offX = this._cacheOffsetX, offY = this._cacheOffsetY;
+		if (cacheCanvas == null) { throw "cache() must be called before updateCache()"; }
+		var ctx = cacheCanvas.getContext("2d");
+		ctx.setTransform(1, 0, 0, 1, -offX, -offY);
+		if (!compositeOperation) {
+			ctx.clearRect(offX, offY, cacheCanvas.width, cacheCanvas.height);
+		} else { ctx.globalCompositeOperation = compositeOperation; }
 		this.draw(ctx, true);
 		if (compositeOperation) { ctx.globalCompositeOperation = "source-over"; }
 		this._applyFilters();
-		this.cacheID++;
+		this.cacheID = DisplayObject._nextCacheID++;
 	}
 
 	/**
@@ -453,7 +462,7 @@ var p = DisplayObject.prototype;
 	 **/
 	p.uncache = function() {
 		this._cacheDataURL = this.cacheCanvas = null;
-		this._cacheOffsetX = this._cacheOffsetY = 0;
+		this.cacheID = this._cacheOffsetX = this._cacheOffsetY = 0;
 	}
 	
 	/**
@@ -680,10 +689,9 @@ var p = DisplayObject.prototype;
 	/**
 	 * @method _tick
 	 * @protected
-	 * @param Boolean advance Indicates whether any related animations should advance.
 	 **/
-	p._tick = function(advance) {
-		if (this.tick) { this.tick(); }
+	p._tick = function(data) {
+		if (this.onTick) { this.onTick(data); }
 	}
 
 	/**

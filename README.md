@@ -204,3 +204,7 @@ An odd mixture of many genres
 
 ###July 26th, 2012
 * Moved development to local, as C9 is being annoying
+
+###July 27th, 2012
+* Updated version of EaselJS, which fixed framerate drops in Firefox
+* Got explosion sound working

@@ -9,6 +9,7 @@ window.onload = function() {
         return copy;
     }
     
+    var FPS = 30;
     var ship2plan = 20;
     var menuDiv = $("#menu");
     var canvas = $("#c");
@@ -26,7 +27,7 @@ window.onload = function() {
     var maxRings = 9;
     
     var imgs = {
-        playerShip: "Graphics/starship.png",
+        playerShip: "Graphics/starship.svg",
         enemyShip: "Graphics/starshipdark_flipped.svg",
         speaker: "Graphics/Icons/speaker.svg",
         muted: "Graphics/Icons/speaker_muted.svg",
@@ -526,7 +527,7 @@ window.onload = function() {
         for(var j=0;j<enemies.length;j++) {
             enemies[j].update(window.playerShip);
             //enemies[j].shootInt += 1000/Ticker.getFPS();
-            enemies[j].shootInt += 1000/30;
+            enemies[j].shootInt += 1000/FPS;
             
             for(var m=0;m<playerBullets.length;m++) {
                 if(E(enemies[j], playerBullets[m])) {
@@ -556,7 +557,7 @@ window.onload = function() {
         }
         stage.update();
         //window.playerShip.shootInt += 1000/Ticker.getFPS();
-        window.playerShip.shootInt += 1000/30;
+        window.playerShip.shootInt += 1000/FPS;
         if(window.playerShip.health<=0) {
             //alert("You died!");
             soundManager.play("Explosion");
@@ -679,6 +680,7 @@ window.onload = function() {
         soundManager.stopAll();
         var n = Math.floor(Math.random()*(window.numBattleSongs))+1;
         //console.log(n);
+        window.battleSongNum = n;
         soundManager.play('Battle'+n);
         
         enemies = enemies.concat(ships);
@@ -687,9 +689,12 @@ window.onload = function() {
     function unfight() {
         document.body.ontouchstart = undefined;
         fighting = false;
-        soundManager.stopAll();
+        //soundManager.stopAll();
+        if(window.battleSongNum) {
+			soundManager.stop("Battle"+window.battleSongNum);
+		}
         var n = Math.floor(Math.random()*(window.numTravelSongs))+1;
-        console.log(n);
+        //console.log(n);
         soundManager.play('Travel'+n);
         //soundManager.play('Travel');
     }
@@ -758,7 +763,7 @@ window.onload = function() {
         //canvas.css("background-position", "0px 0px");
         canvas[0].style.backgroundPositionX = "0px";
         canvas[0].style.backgroundPositionY = "0px";
-        console.log(canvas[0].style.backgroundPosition);
+        //console.log(canvas[0].style.backgroundPosition);
         //menuDiv.hide();
         //splash.hide();
         $("body").removeClass("menuUp");
@@ -784,12 +789,12 @@ window.onload = function() {
             stage.addChild(b);
         }*/
         //stage.addChild(window.playerShip.bit);
-        stage.update();
+        //stage.update();
         //alert(canvas.width()/2-shipW/2);
         unfight();
-        //fight([new EnemyShip(imgs.enemyShip, canvas[0].width/2-shipW/2, canvas[0].height*0.25-shipW, shipW, shipW)]);
+        fight([new EnemyShip(imgs.enemyShip, canvas[0].width/2-shipW/2, canvas[0].height*0.25-shipW, shipW, shipW)]);
         //window.open(replacementImg("Graphics/starshipdark_flipped.svg"));
-        Ticker.setFPS(30);
+        Ticker.setFPS(FPS);
         Ticker.addListener(window);
     }
     function splashScreen(callback) {
@@ -969,7 +974,8 @@ window.onload = function() {
             });
             soundManager.createSound({
                 id: "Explosion",
-                url: "http://wrathgames.com/blog/resources/sound/1/explosion1.mp3",
+                //url: "http://wrathgames.com/blog/resources/sound/1/explosion1.mp3",
+                url: "./Sound/SFX/explosion.mp3"
             });
             /*soundManager.createSound({
                 id: 'Levelup Sound',

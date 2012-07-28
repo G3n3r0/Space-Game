@@ -26,7 +26,7 @@
 * OTHER DEALINGS IN THE SOFTWARE.
 */
 
-(function(window) {
+(function(ns) {
 
 /**
 * A Container is a nestable display lists that allows you to work with compound display elements. For
@@ -43,7 +43,7 @@
 var Container = function() {
   this.initialize();
 }
-var p = Container.prototype = new DisplayObject();
+var p = Container.prototype = new ns.DisplayObject();
 
 // public properties:
 	/**
@@ -104,39 +104,24 @@ var p = Container.prototype = new DisplayObject();
 	 * For example, used for drawing the cache (to prevent it from simply drawing an existing cache back
 	 * into itself).
 	 **/
-	p.draw = function(ctx, ignoreCache, _mtx) {
-		var snap = Stage._snapToPixelEnabled;
+	p.draw = function(ctx, ignoreCache, matrix) {
 		if (this.DisplayObject_draw(ctx, ignoreCache)) { return true; }
-		_mtx = _mtx || this._matrix.reinitialize(1,0,0,1,0,0,this.alpha, this.shadow, this.compositeOperation);
-		var l = this.children.length;
+		
 		// this ensures we don't have issues with display list changes that occur during a draw:
 		var list = this.children.slice(0);
-		for (var i=0; i<l; i++) {
+		for (var i=0,l=list.length; i<l; i++) {
 			var child = list[i];
 			if (!child.isVisible()) { continue; }
-
-			var shadow = false;
-			var mtx = child._matrix.reinitialize(_mtx.a,_mtx.b,_mtx.c,_mtx.d,_mtx.tx,_mtx.ty,_mtx.alpha,_mtx.shadow,_mtx.compositeOperation);
-			mtx.appendTransform(child.x, child.y, child.scaleX, child.scaleY, child.rotation, child.skewX, child.skewY,
-									child.regX, child.regY);
-			mtx.appendProperties(child.alpha, child.shadow, child.compositeOperation);
-
-			if (!(child instanceof Container && child.cacheCanvas == null)) {
-				if (snap && child.snapToPixel && mtx.a == 1 && mtx.b == 0 && mtx.c == 0 && mtx.d == 1) {
-					ctx.setTransform(mtx.a,  mtx.b, mtx.c, mtx.d, mtx.tx+0.5|0, mtx.ty+0.5|0);
-				} else {
-					ctx.setTransform(mtx.a,  mtx.b, mtx.c, mtx.d, mtx.tx, mtx.ty);
-				}
-				ctx.globalAlpha = mtx.alpha;
-				ctx.globalCompositeOperation = mtx.compositeOperation || "source-over";
-				if (shadow = mtx.shadow) { this.applyShadow(ctx, shadow); }
-			}
-			child.draw(ctx, false, mtx);
-			if (shadow) { this.applyShadow(ctx); }
+			
+			// draw the child:
+			ctx.save();
+			child.updateContext(ctx);
+			child.draw(ctx);
+			ctx.restore();
 		}
 		return true;
 	}
-
+	
 	/**
 	 * Adds a child to the top of the display list. You can also add multiple children, such as "addChild(child1, child2, ...);".
 	 * Returns the child that was added, or the last child if multiple children were added.
@@ -162,7 +147,8 @@ var p = Container.prototype = new DisplayObject();
 	 * its parent to this Container. You can also add multiple children, such as "addChildAt(child1, child2, ..., index);". The
 	 * index must be between 0 and numChildren. For example, to add myShape under otherShape in the display list, you could use:
 	 * container.addChildAt(myShape, container.getChildIndex(otherShape)). This would also bump otherShape's index up by one.
-	 * Returns the last child that was added, or the last child if multiple children were added.
+	 * Returns the last child that was added, or the last child if multiple children were added. Fails silently if the index 
+	 * is out of range.
 	 * @method addChildAt
 	 * @param {DisplayObject} child The display object to add.
 	 * @param {Number} index The index to add the child at.
@@ -170,9 +156,10 @@ var p = Container.prototype = new DisplayObject();
 	 **/
 	p.addChildAt = function(child, index) {
 		var l = arguments.length;
+		var indx = arguments[l-1]; // can't use the same name as the index param or it replaces arguments[1]
+		if (indx < 0 || indx > this.children.length) { return arguments[l-2]; }
 		if (l > 2) {
-			index = arguments[i-1];
-			for (var i=0; i<l-1; i++) { this.addChildAt(arguments[i], index+i); }
+			for (var i=0; i<l-1; i++) { this.addChildAt(arguments[i], indx+i); }
 			return arguments[l-2];
 		}
 		if (child.parent) { child.parent.removeChild(child); }
@@ -211,14 +198,14 @@ var p = Container.prototype = new DisplayObject();
 		if (l > 1) {
 			var a = [];
 			for (var i=0; i<l; i++) { a[i] = arguments[i]; }
-			a.sort(function(a, b) { return b-a; })
+			a.sort(function(a, b) { return b-a; });
 			var good = true;
-			for (var i=0; i<l; i++) { good = good && this.removeChildAt(a[i]); }
+			for (i=0; i<l; i++) { good = good && this.removeChildAt(a[i]); }
 			return good;
 		}
 		if (index < 0 || index > this.children.length-1) { return false; }
 		var child = this.children[index];
-		if (child != null) { child.parent = null; }
+		if (child) { child.parent = null; }
 		this.children.splice(index, 1);
 		return true;
 	}
@@ -281,7 +268,7 @@ var p = Container.prototype = new DisplayObject();
 		var kids = this.children;
 		var o1 = kids[index1];
 		var o2 = kids[index2];
-		if (!o1 || !o2) { return; } // TODO: throw error?
+		if (!o1 || !o2) { return; }
 		kids[index1] = o2;
 		kids[index2] = o1;
 	}
@@ -312,14 +299,15 @@ var p = Container.prototype = new DisplayObject();
 	 * @method setChildIndex
 	 **/
 	p.setChildIndex = function(child, index) {
-		var kids = this.children;
-		for (var i=0,l=kids.length;i<l;i++) {
+		var kids = this.children, l=kids.length;
+		if (child.parent != this || index < 0 || index >= l) { return; }
+		for (var i=0;i<l;i++) {
 			if (kids[i] == child) { break; }
 		}
-		if (i==l || index < 0 || index > l || i == index) { return; }
-		kids.splice(index,1);
-		if (index<i) { i--; }
-		kids.splice(child,i,0); // TODO: test.
+		if (i==l || i == index) { return; }
+		kids.splice(i,1);
+		if (index<i) { index--; }
+		kids.splice(index,0,child);
 	}
 
 	/**
@@ -437,14 +425,15 @@ var p = Container.prototype = new DisplayObject();
 	 * @protected
 	 **/
 	p._getObjectsUnderPoint = function(x, y, arr, mouseEvents) {
-		var ctx = DisplayObject._hitTestContext;
-		var canvas = DisplayObject._hitTestCanvas;
+		var ctx = createjs.DisplayObject._hitTestContext;
+		var canvas = createjs.DisplayObject._hitTestCanvas;
 		var mtx = this._matrix;
 		var hasHandler = (mouseEvents&1 && (this.onPress || this.onClick || this.onDoubleClick)) || (mouseEvents&2 &&
 																(this.onMouseOver || this.onMouseOut));
 
-		// if we have a cache handy, we can use it to do a quick check:
-		if (this.cacheCanvas) {
+		// if we have a cache handy & this has a handler, we can use it to do a quick check.
+		// we can't use the cache for screening children, because they might have hitArea set.
+		if (this.cacheCanvas && hasHandler) {
 			this.getConcatenatedMatrix(mtx);
 			ctx.setTransform(mtx.a,  mtx.b, mtx.c, mtx.d, mtx.tx-x, mtx.ty-y);
 			ctx.globalAlpha = mtx.alpha;
@@ -452,9 +441,7 @@ var p = Container.prototype = new DisplayObject();
 			if (this._testHit(ctx)) {
 				canvas.width = 0;
 				canvas.width = 1;
-				if (hasHandler) { return this; }
-			} else {
-				return null;
+				return this;
 			}
 		}
 
@@ -474,12 +461,18 @@ var p = Container.prototype = new DisplayObject();
 					result = child._getObjectsUnderPoint(x, y, arr, mouseEvents);
 					if (!arr && result) { return result; }
 				}
-			} else if (!mouseEvents || hasHandler || (mouseEvents&1 && (child.onPress || child.onClick || child.onDoubleClick)) ||
-														(mouseEvents&2 && (child.onMouseOver || child.onMouseOut))) {
+			} else if (!mouseEvents || hasHandler || (mouseEvents&1 && (child.onPress || child.onClick || child.onDoubleClick)) || (mouseEvents&2 && (child.onMouseOver || child.onMouseOut))) {
+				var hitArea = child.hitArea;
 				child.getConcatenatedMatrix(mtx);
-				ctx.setTransform(mtx.a,  mtx.b, mtx.c, mtx.d, mtx.tx-x, mtx.ty-y);
+				
+				if (hitArea) {
+					mtx.appendTransform(hitArea.x+child.regX, hitArea.y+child.regY, hitArea.scaleX, hitArea.scaleY, hitArea.rotation, hitArea.skewX, hitArea.skewY, hitArea.regX, hitArea.regY);
+					mtx.alpha *= hitArea.alpha/child.alpha;
+				}
+				
 				ctx.globalAlpha = mtx.alpha;
-				child.draw(ctx);
+				ctx.setTransform(mtx.a,  mtx.b, mtx.c, mtx.d, mtx.tx-x, mtx.ty-y);
+				(hitArea||child).draw(ctx);
 				if (!this._testHit(ctx)) { continue; }
 				canvas.width = 0;
 				canvas.width = 1;
@@ -491,5 +484,6 @@ var p = Container.prototype = new DisplayObject();
 		return null;
 	}
 
-window.Container = Container;
-}(window));
+ns.Container = Container;
+}(createjs||(createjs={})));
+var createjs;

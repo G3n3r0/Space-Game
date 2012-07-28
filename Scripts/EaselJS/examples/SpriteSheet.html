@@ -1,13 +1,36 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
-		"http://www.w3.org/TR/html4/loose.dtd">
+<!DOCTYPE html>
 <html>
 <head>
-<title>EaselJS: Sprite Sheet Example</title>
+	<title>EaselJS: Sprite Sheet Example</title>
 
-<link href="assets/demoStyles.css" rel="stylesheet" type="text/css" />
-<script src="http://code.createjs.com/easeljs-0.4.1.min.js"></script>
-<script src="http://code.createjs.com/preloadjs-0.1.0.min.js"></script>
-<script type="text/javascript">
+	<link href="assets/demoStyles.css" rel="stylesheet" type="text/css" />
+	
+	
+	<script>
+		// this sets the namespace for CreateJS to the window object, so you can instantiate objects without specifying 
+		// the namespace: "new Graphics()" instead of "new createjs.Graphics()"
+		var createjs = window;
+	</script>
+	<script src="http://code.createjs.com/preloadjs-0.1.0.min.js"></script>
+
+	<script type="text/javascript" src="../src/easeljs/utils/UID.js"></script>
+	<script type="text/javascript" src="../src/easeljs/geom/Matrix2D.js"></script>
+	<script type="text/javascript" src="../src/easeljs/display/DisplayObject.js"></script>
+	<script type="text/javascript" src="../src/easeljs/display/Container.js"></script>
+	<script type="text/javascript" src="../src/easeljs/display/Stage.js"></script>
+	<script type="text/javascript" src="../src/easeljs/events/MouseEvent.js"></script>
+	<script type="text/javascript" src="../src/easeljs/display/Shape.js"></script>
+	<script type="text/javascript" src="../src/easeljs/display/Graphics.js"></script>
+	<script type="text/javascript" src="../src/easeljs/utils/Ticker.js"></script>
+	<script type="text/javascript" src="../src/easeljs/display/SpriteSheet.js"></script>
+	<script type="text/javascript" src="../src/easeljs/display/Bitmap.js"></script>
+	<script type="text/javascript" src="../src/easeljs/display/BitmapAnimation.js"></script>
+	<script type="text/javascript" src="../src/easeljs/geom/Rectangle.js"></script>
+
+	<!-- We also provide hosted minified versions of all CreateJS libraries.
+	  http://code.createjs.com -->
+
+	<script type="text/javascript">
 
 	var assets;
 	var stage;
@@ -16,30 +39,44 @@
 	var runningRate, isInWarp, isStationary;
 	var stationaryPosition, isPassed;
 
-	function init() {
-		if (window.top != window) {
-			document.getElementById("header").style.display = "none";
-		}
+		function init() {
+			if (window.top != window) {
+				document.getElementById("header").style.display = "none";
+			}
 
-		document.getElementById("loader").className = "loader";
+			document.getElementById("loader").className = "loader";
 
-		var canvas = document.getElementById("testCanvas");
-		stage = new Stage(canvas);
+			var canvas = document.getElementById("testCanvas");
+			stage = new Stage(canvas);
 
-		runningRate = 2.5;
-		isInWarp = false;
-		isStationary = false;
-		stationaryPosition = 300;
-		isPassed = false;
+			runningRate = 2.5;
+			isInWarp = false;
+			isStationary = false;
+			stationaryPosition = 300;
+			isPassed = false;
+
+		spriteSheet ={"animations": {"run": [0, 25], "jump": [26, 63]}, "images": ["assets/runningGrant.png"], "frames": {"regX": 0, "height": 292.5, "count": 64, "regY": 0, "width": 165.75}};
+
+		var ss = new SpriteSheet(spriteSheet);
+		grant = new BitmapAnimation(ss);
+
+		// Set up looping
+		ss.getAnimation("run").next = "run";
+		ss.getAnimation("jump").next = "run";
+		grant.gotoAndPlay("run");
+
+		// Position the Grant sprite
+		grant.x = -200;
+		grant.y = 90;
+		grant.scaleX = grant.scaleY = 0.8;
 
 		// grab canvas width and height for later calculations:
 		w = canvas.width;
 		h = canvas.height;
 
-		assets = [];
+			assets = [];
 
 		manifest = [
-			{src:"assets/runningGrant.json", id:"json"},
 			{src:"assets/runningGrant.png", id:"grant"},
 			{src:"assets/sky.png", id:"sky"},
 			{src:"assets/ground.png", id:"ground"},
@@ -48,27 +85,26 @@
 		];
 
 		loader = new PreloadJS();
+		//loader.useXHR = false; //Loads the images using tag loading.
 		loader.onFileLoad = handleFileLoad;
 		loader.onComplete = handleComplete;
 		loader.loadManifest(manifest);
 		stage.autoClear = false;
-
-		//document.onkeypress = handlePress;
 	}
 
-	function handleFileLoad(event) {
-		assets.push(event);
-	}
+		function handleFileLoad(event) {
+			assets.push(event);
+		}
 
-	function handleComplete() {
-		for(var i=0;i<assets.length;i++) {
-			var item = assets[i]; //loader.getResult(id);
-			var id = item.id;
-			var result = item.result;
+		function handleComplete() {
+			for(var i=0;i<assets.length;i++) {
+				var item = assets[i]; //loader.getResult(id);
+				var id = item.id;
+				var result = item.result;
 
-			if (item.type == PreloadJS.IMAGE) {
-				var bmp = new Bitmap(result);
-			}
+				if (item.type == PreloadJS.IMAGE) {
+					var bmp = new Bitmap(result);
+				}
 
 			switch (id) {
 				case "sky":
@@ -93,60 +129,41 @@
 					hill2.scaleX = hill2.scaleY = 3;
 					hill2.y = 171;
 					break;
-				case "json":
-					try {
-						eval("var json="+result);// Convert to an object.
-					} catch (e) {
-						continue;
-					}
-					var ss = new SpriteSheet(json);
-					grant = new BitmapAnimation(ss);
-
-					// Set up looping
-					ss.getAnimation("run").next = "run";
-					ss.getAnimation("jump").next = "run";
-					grant.gotoAndPlay("run");
-
-					// Position the Grant sprite
-					grant.x = -200;
-					grant.y = 40;
-					grant.scaleX = grant.scaleY = 0.8;
-					break;
 			}
 		}
 
-		document.getElementById("loader").className = "";
+			document.getElementById("loader").className = "";
 
-		if (grant == null) {
-			//console.log("Can not play. Grant sprite was not loaded.");
-			return;
+			if (grant == null) {
+				//console.log("Can not play. Grant sprite was not loaded.");
+				return;
+			}
+
+			stage.addChild(sky, ground, hill, hill2, grant);
+			stage.onMouseDown = handleJumpStart;
+
+			Ticker.setFPS(40);
+			Ticker.addListener(window);
 		}
 
-		stage.addChild(sky, ground, hill, hill2, grant);
-		stage.onMouseDown = handleJumpStart;
+		function handleJumpStart() {
+			grant.gotoAndPlay("jump");
+		}
 
-		Ticker.setFPS(40);
-		Ticker.addListener(window);
-	}
+		function tick() {
+			var outside = w + 20;
+			var position = grant.x+runningRate;
+			grant.x = (position >= outside) ? -200 : position;
 
-	function handleJumpStart() {
-		grant.gotoAndPlay("jump");
-	}
+			ground.x = (ground.x-15) % 330;
+			hill.x = (hill.x - 0.8);
+			if (hill.x + 838 <= 0) { hill.x = outside; }
+			hill2.x = (hill2.x - 1.2);
+			if (hill2.x + 633 <= 0) { hill2.x = outside; }
 
-	function tick() {
-		var outside = w + 20;
-		var position = grant.x+runningRate;
-		grant.x = (position >= outside) ? -200 : position;
-
-		ground.x = (ground.x-15) % 330;
-		hill.x = (hill.x - 0.8);
-		if (hill.x + 838 <= 0) { hill.x = outside; }
-		hill2.x = (hill2.x - 1.2);
-		if (hill2.x + 633 <= 0) { hill2.x = outside; }
-
-		stage.update();
-	}
-</script>
+			stage.update();
+		}
+	</script>
 </head>
 <body onload="init();">
 

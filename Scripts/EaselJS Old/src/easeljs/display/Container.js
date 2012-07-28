@@ -1,10 +1,9 @@
 /*
-* Container by Grant Skinner. Dec 5, 2010
-* Visit http://easeljs.com/ for documentation, updates and examples.
+* Container
+* Visit http://createjs.com/ for documentation, updates and examples.
 *
-*
-* Copyright (c) 2010 Grant Skinner
-*
+* Copyright (c) 2010 gskinner.com, inc.
+* 
 * Permission is hereby granted, free of charge, to any person
 * obtaining a copy of this software and associated documentation
 * files (the "Software"), to deal in the Software without
@@ -13,10 +12,10 @@
 * copies of the Software, and to permit persons to whom the
 * Software is furnished to do so, subject to the following
 * conditions:
-*
+* 
 * The above copyright notice and this permission notice shall be
 * included in all copies or substantial portions of the Software.
-*
+* 
 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
 * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
 * OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
@@ -26,13 +25,6 @@
 * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 * OTHER DEALINGS IN THE SOFTWARE.
 */
-
-/**
-* The Easel Javascript library provides a retained graphics mode for canvas
-* including a full, hierarchical display list, a core interaction model, and
-* helper classes to make working with Canvas much easier.
-* @module EaselJS
-**/
 
 (function(window) {
 
@@ -306,7 +298,7 @@ var p = Container.prototype = new DisplayObject();
 		for (var i=0,l=kids.length;i<l;i++) {
 			if (kids[i] == child1) { index1 = i; }
 			if (kids[i] == child2) { index2 = i; }
-			if (index1 != null && index2 != null) { return; }
+			if (index1 != null && index2 != null) { break; }
 		}
 		if (i==l) { return; } // TODO: throw error?
 		kids[index1] = child2;
@@ -426,12 +418,12 @@ var p = Container.prototype = new DisplayObject();
 	 * @method _tick
 	 * @protected
 	 **/
-	p._tick = function(advance) {
+	p._tick = function(data) {
 		for (var i=this.children.length-1; i>=0; i--) {
 			var child = this.children[i];
-			if (child._tick) { child._tick(advance); }
+			if (child._tick) { child._tick(data); }
 		}
-		if (this.tick) { this.tick(); }
+		if (this.onTick) { this.onTick(data); }
 	}
 
 	/**

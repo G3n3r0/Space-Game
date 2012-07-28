@@ -1,9 +1,20 @@
-Future:
+Version NEXT [release TBD]
 ****************************************************************************************************
-- DisplayObject.hitArea
-- masking / clipping
-- SpriteSheetBuilder
-- packaging / namespace
+- moved all classes into a configurable createjs namespace
+- added AlphaMapFilter & AlphaMaskFilter
+- added support for multitouch
+- complete rewrite of drawing model to use a hybrid approach (save/restore & matrix)
+- added DisplayObject.mask
+- added Graphics.drawAsPath(ctx)
+- added Text.getMeasuredHeight()
+- added DisplayObject.updateContext(ctx)
+- added DisplayObject.getMatrix(matrix)
+- added DisplayObject.hitArea
+- fixed issue with Text not displaying if .text is 0 or false.
+- fix for setChildIndex
+- fix for addChildAt with multiple params
+- added SpriteSheetBuilder
+- added MovieClip.actionsEnabled
 
 
 Version 0.4.2 [Apr 18, 2012] 
@@ -34,6 +45,7 @@ Version 0.4.1 [Apr 14, 2012]
 - support for passing a canvas string id to the Stage constructor
 - various bug fixes and doc updates
 - updateCache now clears the cacheCanvas correctly
+- updates to Ticker to improve support for requestAnimationFrame
 
 
 Version 0.4 [Nov 30, 2011] 

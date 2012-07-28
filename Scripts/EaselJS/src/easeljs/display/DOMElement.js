@@ -26,7 +26,7 @@
 * OTHER DEALINGS IN THE SOFTWARE.
 */
 
-(function(window) {
+(function(ns) {
 // TODO: fix problems with rotation.
 // TODO: exclude from getObjectsUnderPoint
 
@@ -52,7 +52,7 @@
 var DOMElement = function(htmlElement) {
   this.initialize(htmlElement);
 }
-var p = DOMElement.prototype = new DisplayObject();
+var p = DOMElement.prototype = new ns.DisplayObject();
 
 // public properties:
 	/**
@@ -118,15 +118,16 @@ var p = DOMElement.prototype = new DisplayObject();
 	 * into itself).
 	 **/
 	p.draw = function(ctx, ignoreCache) {
-		// TODO: possibly save out previous matrix values, to compare against new ones (so layout doesn't need to fire if no change)
+		// TODO: possibly save out previous matrix values, to compare against new ones (so layout doesn't need to fire if there is no change)
 		if (this.htmlElement == null) { return; }
-		var mtx = this._matrix;
+		var mtx = this.getConcatenatedMatrix(this._matrix);
+		
 		var o = this.htmlElement;
 		o.style.opacity = ""+mtx.alpha;
 		// this relies on the _tick method because draw isn't called if a parent is not visible.
 		o.style.visibility = this.visible ? "visible" : "hidden";
-		o.style.transform = o.style.webkitTransform = o.style.oTransform =  o.style.msTransform = ["matrix("+mtx.a,mtx.b,mtx.c,mtx.d,mtx.tx,mtx.ty+")"].join(",");
-		o.style.MozTransform = ["matrix("+mtx.a,mtx.b,mtx.c,mtx.d,mtx.tx+"px",mtx.ty+"px)"].join(",");
+		o.style.transform = o.style.webkitTransform = o.style.oTransform =  o.style.msTransform = ["matrix("+mtx.a,mtx.b,mtx.c,mtx.d,(mtx.tx+0.5|0),(mtx.ty+0.5|0)+")"].join(",");
+		o.style.MozTransform = ["matrix("+mtx.a,mtx.b,mtx.c,mtx.d,(mtx.tx+0.5|0)+"px",(mtx.ty+0.5|0)+"px)"].join(",");
 		return true;
 	}
 
@@ -209,5 +210,6 @@ var p = DOMElement.prototype = new DisplayObject();
 		return true;
 	}
 	*/
-window.DOMElement = DOMElement;
-}(window));
+ns.DOMElement = DOMElement;
+}(createjs||(createjs={})));
+var createjs;

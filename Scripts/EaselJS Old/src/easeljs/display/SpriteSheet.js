@@ -1,10 +1,9 @@
 /*
-* SpriteSheet by Grant Skinner. Dec 5, 2010
-* Visit http://easeljs.com/ for documentation, updates and examples.
+* SpriteSheet
+* Visit http://createjs.com/ for documentation, updates and examples.
 *
-*
-* Copyright (c) 2010 Grant Skinner
-*
+* Copyright (c) 2010 gskinner.com, inc.
+* 
 * Permission is hereby granted, free of charge, to any person
 * obtaining a copy of this software and associated documentation
 * files (the "Software"), to deal in the Software without
@@ -13,10 +12,10 @@
 * copies of the Software, and to permit persons to whom the
 * Software is furnished to do so, subject to the following
 * conditions:
-*
+* 
 * The above copyright notice and this permission notice shall be
 * included in all copies or substantial portions of the Software.
-*
+* 
 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
 * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
 * OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
@@ -26,13 +25,6 @@
 * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 * OTHER DEALINGS IN THE SOFTWARE.
 */
-
-/**
- * The Easel Javascript library provides a retained graphics mode for canvas
- * including a full, hierarchical display list, a core interaction model, and
- * helper classes to make working with Canvas much easier.
- * @module EaselJS
- **/
 
 (function(window) {
 /**
@@ -109,7 +101,7 @@
  * with two animations, "run" looping from frame 0-4 inclusive, and "jump" playing from frame 5-8 and sequencing back to run:
  * <pre><code>data = {
 &#9;images: ["sprites.jpg"],
-&#9;frames: {frameWidth:50, frameHeight:50},
+&#9;frames: {width:50, height:50},
 &#9;animations: {run:[0,4], jump:[5,8,"run"]}
 }</code></pre>
  
@@ -129,6 +121,21 @@ var p = SpriteSheet.prototype;
 	 * @type Boolean
 	 **/
 	p.complete = true;
+	
+	
+	/**
+	 * The onComplete callback is called when all images are loaded. Note that this only fires if the images
+	 * were not fully loaded when the sprite sheet was initialized. You should check the complete property 
+	 * to prior to adding an onComplete handler. Ex.
+	 * <pre><code>var sheet = new SpriteSheet(data);
+	 * if (!sheet.complete) {
+	 *  &nbsp; // not preloaded, listen for onComplete:
+	 *  &nbsp; sheet.onComplete = handler;
+	 * }</code></pre>
+	 * 
+	 * @event onComplete
+	 **/
+	p.onComplete = null;
 	
 // private properties:
 	/**
@@ -261,7 +268,7 @@ var p = SpriteSheet.prototype;
 					anim.next = obj.next;
 					a = anim.frames = obj.frames.slice(0);
 				}
-				anim.next = (a.length < 2 || anim.next == false) ? null : (anim.next == true) ? name : anim.next;
+				anim.next = (a.length < 2 || anim.next == false) ? null : (anim.next == null || anim.next == true) ? name : anim.next;
 				if (!anim.frequency) { anim.frequency = 1; }
 				this._animations.push(name);
 				this._data[name] = anim;
@@ -361,6 +368,7 @@ var p = SpriteSheet.prototype;
 		if (--this._loadCount == 0) {
 			this._calculateFrames();
 			this.complete = true;
+			this.onComplete&&this.onComplete();
 		}
 	}
 	
