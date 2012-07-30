@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Isometrics Test</title>
+		<style>
+			#c {
+				background-color: black;
+				background-image: url(http://opengameart.org/sites/default/files/preview_63.jpg);
+			}
+			html, body {
+				border: 0px;
+				margin: 0px;
+				padding: none;
+				overflow: hidden;
+			}
+		</style>
+		<!--<script src="Scripts/EaselJS/lib/easeljs-0.4.2.min.js"></script>-->
+		<script>
+			window.onload = function() {
+				canvas = document.getElementById("c");
+				canvas.width = window.innerWidth;
+				canvas.height = window.innerHeight;
+				c = canvas.getContext("2d");
+				var img = new Image();
+				img.onload = function(e) {
+					//console.log(this.width);
+					for(var x=0;x<canvas.width/this.width;x++) {
+						for(var y=0;y<canvas.height/this.height/2;y++) {
+							/*if(x%2) {
+								c.drawImage(this, x*this.width, y*this.height*2, this.width*2, this.height*2);
+							} else {
+								c.drawImage(this, x*this.width, y*this.height*2+this.height, this.width*2, this.height*2);
+							}*/
+							c.drawImage(this, x*this.width-(0.5*this.width), y*this.height*2+this.height*(x%2)-(0.5*this.height), this.width*2, this.height*2);
+						}
+					}
+				};
+				img.src = "dark_sands.png";
+			};
+		</script>
+	</head>
+	<body>
+		<canvas id="c" width="640" height="640"></canvas>
+	</body>
+</html>

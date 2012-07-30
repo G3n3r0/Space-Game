@@ -208,3 +208,11 @@ An odd mixture of many genres
 ###July 27th, 2012
 * Updated version of EaselJS, which fixed framerate drops in Firefox
 * Got explosion sound working
+
+###July 29th, 2012
+* Decided to have planets use a strategy-type thingy
+* Some planets will be square
+* **Idea**: Different paths begin with inane question at start of game
+* Fixed a small bit of lag with bullet sounds
+* Changed enemy AI, will now enter overdrive when health <=50%
+* Will use [Keitai Denjū Telefang](http://en.wikipedia.org/wiki/Keitai_Denj%C5%AB_Telefang) sprites, at least as temporary

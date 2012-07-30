@@ -157,7 +157,7 @@ window.onload = function() {
         this.src = src;
         this.x = x;
         this.y = y;
-        this.r = ship2plan*shipW;
+        this.r = (ship2plan*shipW)/2;
         var t = this;
         this.img = new Image();
         this.img.onload = function() {
@@ -172,7 +172,7 @@ window.onload = function() {
         };
         this.img.src = this.src;
     }
-    var planets = [new Planet("Zaklorg", "http://opengameart.org/sites/default/files/PlanetRed.png", 0, 0), new Planet("Vlag", "Graphics/tundra.png", 5, 3), new Planet("Shukal", "Graphics/desert.png", 9, 9)];
+    var planets = [new Planet("Zaklorg", "http://opengameart.org/sites/default/files/PlanetRed.png", 0, 0), new Planet("Vlag", "Graphics/tundra.png", 5, 3), new Planet("Shukaal", "Graphics/desert.png", 9, 9)];
     var magicPlanet = new Planet("Yil-Tulzscha", "http://placekitten.com/1024/1024", 0, 0);
     //var curPlanet = planets[0];
     
@@ -227,6 +227,7 @@ window.onload = function() {
         this.x = x;
         //this.y = y;
         this.y = 0-height;
+        this.defMaxY = y;
         this.maxY = y;
         //this.spd = 2;
         this.spd = (2/640)*canvas[0].width;
@@ -269,6 +270,10 @@ window.onload = function() {
         if(this.x<p.x) vx += this.spd;
         if(this.x==p.x) vx = 0;
         this.x += vx;
+        if(this.health<= 0.5*this.maxHealth && this.maxY==this.defMaxY) {
+			this.maxY *= 4;
+			this.bulletInt *= 0.5;
+		}
         if(this.y<this.maxY) {
             this.y += this.spd;
         }
@@ -288,10 +293,11 @@ window.onload = function() {
         }*/
         if(this.shootInt>=this.bulletInt) {
             enemyBullets.push(new Bullet(["red", "orange", "red"], this.x+this.width/2-4, this.y+this.height, "enemy"));
-            var sound = soundManager.getSoundById("Bullet");
+            /*var sound = soundManager.getSoundById("Bullet");
             sound.setPosition(0);
-            sound.play();
+            sound.play();*/
             //soundManager.play("Bullet");
+            window.bullet.play();
             this.shootInt = 0;
         }
         this.bit.x = this.x;
@@ -382,10 +388,11 @@ window.onload = function() {
         
         if(f && this.shootInt>=this.bulletInt) {
             //soundManager.play("Bullet");
-            playerBullets.push(new Bullet(["green", "lime", "green"], this.x+this.width/2-4, this.y-4, "friend"));
-            var sound = soundManager.getSoundById("Bullet");
+            /*var sound = soundManager.getSoundById("Bullet");
             sound.setPosition(0);
-            sound.play();
+            sound.play();*/
+            window.bullet.play();
+            playerBullets.push(new Bullet(["green", "lime", "green"], this.x+this.width/2-4, this.y-4, "friend"));
             this.shootInt = 0;
         }
         
@@ -968,10 +975,11 @@ window.onload = function() {
             
             soundManager.createSound({
                 id: 'Bullet',
-                url: './Sound/SFX/silencer.mp3',
+                url: './Sound/SFX/silencerFixed.mp3',
                 //url: './Sound/Music/copycat_levelup.wav',
                 multiShot: true
             });
+            window.bullet = soundManager.getSoundById("Bullet");
             soundManager.createSound({
                 id: "Explosion",
                 //url: "http://wrathgames.com/blog/resources/sound/1/explosion1.mp3",
